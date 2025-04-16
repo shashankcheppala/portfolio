@@ -687,6 +687,16 @@
   0%   { transform: rotateX(0) rotateY(0); }
   100% { transform: rotateX(360deg) rotateY(360deg); }
 }
+    .video-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  min-height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  pointer-events: none;
+}
 
   </style>
 </head>
