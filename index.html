@@ -1,56 +1,52 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Interactive Image — Scroll Parallax</title>
+<title>Portfolio — Scroll Zoom Hero</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-  :root{ --bg:#0a0a0c; --fg:#e9ecf1; --muted:#9aa3b2; --line:rgba(255,255,255,.08); }
+  :root{ --bg:#0a0a0c; --fg:#e9ecf1; --muted:#9aa3b2; }
   *{box-sizing:border-box}
-  html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:Inter,system-ui}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui}
   a{color:inherit;text-decoration:none}
-  /* Glass pill nav (optional) */
-  .nav{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:50;display:flex;gap:12px;
-       padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:rgba(20,20,28,.45);backdrop-filter:blur(8px)}
-  .nav a{font-size:13px;color:#cdd3df;opacity:.9;padding:6px 10px;border-radius:999px}
-  .nav a:hover{background:rgba(255,255,255,.06)}
 
-  .wrap{max-width:1200px;margin:0 auto;padding:0 24px}
-  header{min-height:100vh;display:grid;place-items:center;text-align:center}
-  h1{font-weight:900;font-size:clamp(40px,9vw,120px);line-height:.95;letter-spacing:-.02em;margin:0}
-  p.lead{color:#b9c2d3;max-width:740px;margin:12px auto 0}
-
-  /* Interactive image stage */
-  .stage{position:relative;min-height:140vh;display:flex;align-items:flex-start;padding-top:12vh}
-  .frame{
-    position:sticky; top:10vh; width:min(1000px,90vw); margin:0 auto;
-    aspect-ratio:16/9; border-radius:24px; overflow:hidden;
-    border:1px solid var(--line); background:linear-gradient(180deg,#12131a,#0b0c12);
-    transform-style:preserve-3d; will-change:transform;
+  /* === HERO (pinned) === */
+  .hero{
+    height: 200svh;              /* scroll distance for the effect */
+    position: relative;
   }
-  .imgwrap{position:absolute; inset:0; overflow:hidden}
-  .imgwrap img{
-    width:120%; height:120%; object-fit:cover;
-    transform:translate3d(0,0,0) scale(1); will-change:transform;
-    filter:contrast(1) saturate(1) brightness(.92);
+  .pin{
+    position: sticky; top:0;
+    height: 100svh;              /* true device viewport on mobile */
+    overflow: hidden;
   }
-  /* Reveal mask that grows on scroll (for drama) */
-  .mask{
-    position:absolute; inset:-20%; pointer-events:none; mix-blend:lighten;
-    -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 0%, #000 45%, transparent 60%);
-            mask-image: radial-gradient(circle at 50% 50%, #000 0%, #000 45%, transparent 60%);
-    opacity:.65;
+  .visual{
+    position:absolute; inset:0;
+    display:grid; place-items:center;
+    will-change: transform;
   }
-  .mask::before{
-    content:""; position:absolute; inset:0;
-    background:radial-gradient(60% 60% at 50% 50%, rgba(159,216,255,.22), transparent 70%),
-               radial-gradient(40% 40% at 80% 50%, rgba(255,255,255,.08), transparent 70%);
+  .visual img{
+    width:110%; height:110%;     /* bleed to avoid edges while scaling */
+    object-fit: cover;
+    transform: scale(1);
+    will-change: transform;
+    filter: brightness(.92) contrast(1.02) saturate(.98);
+  }
+  .headline{
+    position:absolute; inset:0; display:grid; place-items:center;
+    text-align:center; pointer-events:none;
+  }
+  h1{
+    margin:0; line-height:.94; letter-spacing:-.02em;
+    font-weight:900; font-size:clamp(40px,9vw,120px);
+    text-shadow: 0 6px 18px rgba(0,0,0,.4);
   }
 
-  section{min-height:100vh;display:flex;align-items:center;border-top:1px solid var(--line)}
-  .content{max-width:900px}
+  /* === CONTENT === */
+  section{min-height:100svh; display:flex; align-items:center; border-top:1px solid rgba(255,255,255,.08)}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 24px}
   h2{font-size:clamp(24px,3vw,40px);margin:0 0 10px}
   .muted{color:var(--muted)}
 
@@ -58,108 +54,77 @@
 </style>
 </head>
 <body>
-  <nav class="nav">
-    <a href="#work">Work</a><a href="#about">About</a><a href="#contact">Contact</a>
-  </nav>
 
-  <header>
-    <div class="wrap">
-      <h1>Interactive Visual<br/>on Scroll</h1>
-      <p class="lead">Igloo-style hero: the image scales, pans, and reacts to your mouse while a reveal mask expands on scroll.</p>
-    </div>
-  </header>
-
-  <!-- INTERACTIVE IMAGE SECTION -->
-  <div class="stage" id="work">
-    <div class="frame" id="frame">
-      <div class="imgwrap">
-        <!-- Replace src with your own image path (e.g., media/hero.jpg) -->
-        <img id="heroimg" src="https://images.unsplash.com/photo-1518779578993-ec3579fee39f?q=80&w=2000&auto=format&fit=crop" alt="">
+  <!-- PINNED HERO SCROLL-ZOOM -->
+  <div class="hero">
+    <div class="pin">
+      <div class="visual">
+        <!-- REPLACE src with your own high-res image (e.g., media/hero.jpg) -->
+        <img id="heroImg" src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=2400&auto=format&fit=crop" alt="">
       </div>
-      <div class="mask" id="mask"></div>
+      <div class="headline">
+        <h1>Shashank Cheppala</h1>
+      </div>
     </div>
   </div>
 
+  <!-- CONTENT SECTIONS -->
+  <section id="work">
+    <div class="wrap">
+      <h2>Selected Work</h2>
+      <p class="muted">Put your projects here. The hero above pins while you scroll and zooms like Apple/Igloo intros.</p>
+    </div>
+  </section>
+
   <section id="about">
-    <div class="wrap content">
+    <div class="wrap">
       <h2>About</h2>
-      <p class="muted">This block exists to give you scroll distance. As you scroll, the sticky frame stays put while the image animates.</p>
+      <p class="muted">MS Data Analytics @ UIS • NLP, CV, ML pipelines. Replace with your copy.</p>
     </div>
   </section>
 
-  <section id="contact">
-    <div class="wrap content">
-      <h2>Contact</h2>
-      <p class="muted">Replace with your portfolio content. The interactive image can be reused for case studies by swapping the image source.</p>
-    </div>
-  </section>
+  <footer>© <span id="y"></span> Shashank Cheppala</footer>
 
-  <footer>© <span id="y"></span> Your Name</footer>
-
+  <!-- GSAP -->
   <script src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://unpkg.com/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
   <script>
     document.getElementById('y').textContent = new Date().getFullYear();
     gsap.registerPlugin(ScrollTrigger);
 
-    // Elements
-    const frame = document.getElementById('frame');
-    const img   = document.getElementById('heroimg');
-    const mask  = document.getElementById('mask');
+    const img = document.getElementById('heroImg');
 
-    // 1) Scroll-driven timeline
-    const tl = gsap.timeline({
-      scrollTrigger:{
-        trigger: ".stage",
-        start: "top top",     // when stage hits top of viewport
-        end:   "bottom top",  // until we finish scrolling past it
-        scrub: 0.6
+    // Main scroll-zoom: pin hero and scale image from 1 -> 1.75
+    gsap.to(img, {
+      scale: 1.75,
+      ease: "none",
+      scrollTrigger: {
+        trigger: ".hero",
+        start: "top top",
+        end: "bottom top",      // across the 200svh hero height
+        scrub: true,
+        pin: ".pin",            // pin only the inner viewport
+        anticipatePin: 1
       }
     });
 
-    // Scale up and pan image vertically while scrolling
-    tl.fromTo(img,
-      { scale: 1.05, yPercent: -6 },
-      { scale: 1.28, yPercent: 12, ease: "none" }
-    );
+    // Optional: fade headline slightly as you zoom
+    gsap.to(".headline", {
+      opacity: 0,
+      ease: "none",
+      scrollTrigger: {
+        trigger: ".hero",
+        start: "25% top",
+        end: "bottom top",
+        scrub: true
+      }
+    });
 
-    // Grow/soften the circular reveal mask as you scroll
-    tl.fromTo(mask,
-      { opacity:.55, "--r": 45 },
-      {
-        opacity:.9, duration:1, ease:"none",
-        onUpdate: () => {
-          // expand the CSS mask by adjusting background size via transform (fake radius)
-          const p = tl.progress();
-          mask.style.webkitMaskImage = `radial-gradient(circle at 50% 50%, #000 0%, #000 ${45 + p*35}%, transparent ${60 + p*30}%)`;
-          mask.style.maskImage      = `radial-gradient(circle at 50% 50%, #000 0%, #000 ${45 + p*35}%, transparent ${60 + p*30}%)`;
-        }
-      },
-      0
-    );
-
-    // 2) Subtle mouse parallax (Igloo vibe)
-    let tx=0, ty=0, mx=0, my=0, raf;
-    window.addEventListener('mousemove', e=>{
-      mx = (e.clientX / innerWidth  - 0.5);
-      my = (e.clientY / innerHeight - 0.5);
-      if(!raf) loop();
-    }, {passive:true});
-
-    function loop(){
-      tx += (mx - tx) * 0.08;
-      ty += (my - ty) * 0.08;
-      // Tiny 3D tilt + image offset; keep values modest
-      frame.style.transform = `perspective(1200px) rotateX(${ -ty*3 }deg) rotateY(${ tx*4 }deg)`;
-      img.style.transform = `translate3d(${ tx*-10 }px, ${ ty*10 }px, 0) scale(${gsap.getProperty(img,'scale') || 1.2})`;
-      raf = (Math.abs(mx-tx)>0.001 || Math.abs(my-ty)>0.001) ? requestAnimationFrame(loop) : (raf=0);
-    }
-
-    // 3) Reduce motion for a11y
+    // Reduce motion accessibility
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       ScrollTrigger.getAll().forEach(st => st.disable());
-      frame.style.transform = 'none';
-      img.style.transform = 'scale(1.05)';
+      img.style.transform = 'scale(1.1)';
+      document.querySelector('.headline').style.opacity = '1';
     }
   </script>
 </body>
