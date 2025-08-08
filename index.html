@@ -1,276 +1,421 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Shanks — Interactive 3D Portfolio</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shashank Cheppala | Data Analytics Portfolio</title>
+  <meta name="description" content="Data Analytics portfolio of Shashank Cheppala — Machine Learning, NLP, Deep Learning, and data visualization projects." />
+  <meta name="theme-color" content="#0a192f" />
+  <meta property="og:title" content="Shashank Cheppala | Data Analytics Portfolio" />
+  <meta property="og:description" content="Machine Learning • NLP • Deep Learning • Data Visualization" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://raw.githubusercontent.com/shashankcheppala/dump/b1ab57cf9919a511df270a321a458ae4e49f1909/portfolio_og.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Roboto+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link rel="preload" as="audio" href="https://raw.githubusercontent.com/shashankcheppala/dump/0db9915a106ec20f425fce690578ca6b94332fe0/natural.mp3" />
+  <script defer src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/js/all.min.js"></script>
   <style>
-    /* ---- Base ---- */
-    :root {
-      --bg:#0c111b; --fg:#e8ebf2; --muted:#b6b9c6; --accent:#7ea7ff;
-      --vh:100vh; /* set at runtime for mobile safe area */
+    :root{--space-black:#000;--deep-space:#030303;--cosmic-blue:#0a192f;--nebula-purple:#6e07f3;--star-white:#e6f1ff;--meteor-orange:#ff5d01;--cosmic-teal:#64ffda;--glow-blue:#5cceee;--text-primary:rgba(255,255,255,.92);--text-secondary:rgba(255,255,255,.72);--card-bg:rgba(10,25,47,.65);--soft:#0b1222}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter',-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,var(--deep-space),#060b18 35%,#000);color:var(--text-primary);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+    /* --- Layout --- */
+    .container{max-width:1200px;margin:0 auto;padding:0 1.25rem}
+    .section{position:relative;padding:5.5rem 0}
+    @media (max-width:768px){.section{padding:3.5rem 0}}
+    /* --- Navbar --- */
+    .navbar{position:sticky;top:0;z-index:50;backdrop-filter:saturate(140%) blur(10px);background:rgba(0,0,0,.6);border-bottom:1px solid rgba(255,255,255,.06)}
+    .nav-link{position:relative;padding:.5rem .75rem;color:var(--text-secondary)}
+    .nav-link:hover,.nav-link:focus{color:var(--cosmic-teal)}
+    .nav-link:focus-visible{outline:2px dashed var(--cosmic-teal);outline-offset:2px}
+    /* --- Hero --- */
+    .hero{min-height:92vh;display:grid;place-items:center;overflow:hidden}
+    .hero-title{font-size:clamp(2.5rem,6vw,4.5rem);font-weight:800;line-height:1.1}
+    .hero-sub{font-size:clamp(1.1rem,2.3vw,1.5rem);opacity:.9}
+    /* --- Cards --- */
+    .card{background:var(--card-bg);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:1.25rem 1.25rem 1.1rem;box-shadow:0 6px 30px rgba(0,0,0,.35)}
+    .card:hover{transform:translateY(-4px);transition:.25s ease}
+    /* --- Badges --- */
+    .badge{display:inline-block;padding:.35rem .7rem;margin:.25rem;border:1px solid rgba(110,7,243,.35);background:rgba(110,7,243,.18);border-radius:999px;font-size:.83rem}
+    /* --- Buttons --- */
+    .btn{display:inline-flex;align-items:center;gap:.5rem;border:1px solid var(--cosmic-teal);color:var(--cosmic-teal);padding:.7rem 1.1rem;border-radius:10px;text-decoration:none;font-weight:600;transition:.25s}
+    .btn:hover{background:rgba(100,255,218,.1);box-shadow:0 0 0 3px rgba(100,255,218,.15) inset}
+    /* --- Reveal --- */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease}
+    .reveal.active{opacity:1;transform:none}
+    /* --- Custom Cursor (reduced for perf) --- */
+    .cursor{position:fixed;inset:auto auto;left:0;top:0;width:16px;height:16px;border-radius:50%;background:rgba(100,255,218,.45);mix-blend-mode:difference;pointer-events:none;z-index:60;transform:translate(-50%,-50%);transition:width .2s,height .2s,opacity .2s}
+    .cursor.big{width:36px;height:36px;opacity:.6}
+    @media (pointer:coarse){.cursor{display:none}}
+    /* --- Accessibility: reduced motion --- */
+    @media (prefers-reduced-motion:reduce){
+      *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;scroll-behavior:auto !important}
     }
-    html,body { height:100%; background:var(--bg); color:var(--fg); margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;}
-    a { color: var(--accent); text-decoration: none; }
-    .wrap { position: relative; z-index: 2; }
-    /* ---- Canvas ---- */
-    #scene { position: fixed; inset:0; display:block; z-index:1; }
-    /* ---- Sections ---- */
-    section {
-      position: relative; min-height: var(--vh);
-      display:flex; align-items:center; justify-content:center; padding:6rem 1.5rem;
-    }
-    .center {
-      max-width: 960px; width:100%; text-align: center;
-      backdrop-filter: blur(2px);
-    }
-    h1,h2 { margin:0 0 .5rem; letter-spacing:.5px }
-    h1 { font-size: clamp(2rem, 5vw, 4rem); }
-    h2 { font-size: clamp(1.4rem, 3.2vw, 2rem); color:var(--muted); font-weight:500 }
-    p { color: var(--muted); line-height:1.6; margin:.75rem auto 0; max-width:70ch }
-    /* Cards / gallery */
-    .cards { display:grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap:1rem; margin-top:1.5rem }
-    .card {
-      border:1px solid rgba(255,255,255,.07); border-radius:12px; padding:1rem 1.1rem;
-      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
-    }
-    .pill { display:inline-block; padding:.25rem .6rem; border:1px solid rgba(255,255,255,.14); border-radius:999px; color:#cfe1ff; font-size:.8rem; letter-spacing:.4px }
-    /* Footer socials */
-    .socials { display:flex; gap:1rem; justify-content:center; margin-top:1rem; flex-wrap:wrap }
-    .socials a { padding:.4rem .7rem; border:1px solid rgba(255,255,255,.12); border-radius:10px }
-    /* Subtle top gradient to lift text */
-    .fadeTop, .fadeBottom {
-      position: fixed; left:0; right:0; height:12vh; z-index:2; pointer-events:none;
-    }
-    .fadeTop { top:0; background:linear-gradient(var(--bg),transparent) }
-    .fadeBottom { bottom:0; background:linear-gradient(transparent,var(--bg)) }
-    /* Loading badge */
-    #loading {
-      position: fixed; top:12px; right:12px; z-index:3; padding:.4rem .6rem; font-size:.8rem;
-      border:1px solid rgba(255,255,255,.15); border-radius:8px; color:#c8d7ff; background:rgba(255,255,255,.03)
-    }
-    @media (max-width:560px){ .cards{grid-template-columns:1fr} }
+    /* --- Timeline --- */
+    .timeline{position:relative;padding-left:1rem}
+    .timeline:before{content:"";position:absolute;left:0;top:.2rem;bottom:.2rem;width:2px;background:linear-gradient(var(--nebula-purple),transparent)}
+    .t-dot{position:absolute;left:-6px;width:12px;height:12px;border-radius:999px;background:var(--nebula-purple);box-shadow:0 0 10px var(--nebula-purple)}
+    /* --- Footer --- */
+    footer{border-top:1px solid rgba(255,255,255,.06);background:rgba(0,0,0,.5)}
+    /* --- Video bg --- */
+    .video-bg{position:fixed;inset:0;object-fit:cover;z-index:-1;filter:saturate(105%) brightness(.9)}
   </style>
 </head>
 <body>
-  <canvas id="scene" aria-hidden="true"></canvas>
-  <div class="fadeTop"></div><div class="fadeBottom"></div>
-  <div id="loading">Loading…</div>
+  <!-- Skip link -->
+  <a class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 btn" href="#main">Skip to content</a>
 
-  <main class="wrap">
-    <!-- HERO -->
-    <section id="hero">
-      <div class="center">
-        <div class="pill">Shanks — MSDA</div>
-        <h1>Interactive Data Portfolio</h1>
-        <h2>WebGL + Scroll-driven 3D. Lightweight. Production-ready.</h2>
-        <p>Scroll to explore projects. The 3D scene and camera react in real-time. Footer ends with a particle morph moment.</p>
+  <!-- Cursor (desktop) -->
+  <div id="cursor" class="cursor" aria-hidden="true"></div>
+
+  <!-- Video Background (lightweight autoplay) -->
+  <video class="video-bg" autoplay muted loop playsinline preload="metadata" poster="https://raw.githubusercontent.com/shashankcheppala/dump/b1ab57cf9919a511df270a321a458ae4e49f1909/portfolio_poster.jpg">
+    <source src="https://raw.githubusercontent.com/shashankcheppala/dump/b1ab57cf9919a511df270a321a458ae4e49f1909/Port_Vid.mp4" type="video/mp4" />
+  </video>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="container flex items-center justify-between py-3">
+      <a href="#home" class="text-xl font-bold text-teal-300 tracking-wide">S.C</a>
+      <nav class="hidden md:flex items-center space-x-2" aria-label="Primary">
+        <a class="nav-link" href="#about">About</a>
+        <a class="nav-link" href="#skills">Skills</a>
+        <a class="nav-link" href="#experience">Experience</a>
+        <a class="nav-link" href="#projects">Projects</a>
+        <a class="nav-link" href="#publications">Publications</a>
+        <a class="nav-link" href="#awards">Awards</a>
+        <a class="nav-link" href="#contact">Contact</a>
+      </nav>
+      <button id="menuBtn" class="md:hidden btn" aria-expanded="false" aria-controls="mobileMenu"><i class="fas fa-bars"></i><span class="sr-only">Menu</span></button>
+    </div>
+    <div id="mobileMenu" class="md:hidden hidden border-t border-white border-opacity-10" role="region" aria-label="Mobile">
+      <div class="container py-3 grid gap-2">
+        <a class="nav-link" href="#about">About</a>
+        <a class="nav-link" href="#skills">Skills</a>
+        <a class="nav-link" href="#experience">Experience</a>
+        <a class="nav-link" href="#projects">Projects</a>
+        <a class="nav-link" href="#publications">Publications</a>
+        <a class="nav-link" href="#awards">Awards</a>
+        <a class="nav-link" href="#contact">Contact</a>
       </div>
-    </section>
+    </div>
+  </header>
 
-    <!-- PROJECTS -->
-    <section id="projects">
-      <div class="center">
-        <div class="pill">Projects</div>
-        <h1>Selected Work</h1>
-        <div class="cards">
-          <div class="card"><h3>Fake News Evolution (NLP)</h3><p>DistilBERT & LSTM classification, trend viz, augmentation.</p></div>
-          <div class="card"><h3>Deepfake Detection</h3><p>Hybrid CNN + emotion fusion, EfficientNetB0, focal loss.</p></div>
-          <div class="card"><h3>Mental Health Crisis</h3><p>Real-time prediction pipeline with streaming inference.</p></div>
-          <div class="card"><h3>Diabetes Prediction</h3><p>Soft-voting ensemble, SHAP insights, clean deployment.</p></div>
+  <main id="main">
+    <!-- Hero -->
+    <section id="home" class="hero section">
+      <div class="container grid md:grid-cols-2 items-center gap-8">
+        <div class="reveal">
+          <p class="font-mono text-teal-300 mb-3">&gt; console.log("Hello, Universe!")</p>
+          <h1 class="hero-title mb-3">Shashank <span class="text-teal-300">Cheppala</span></h1>
+          <p class="hero-sub mb-6">Data Analytics &amp; Machine Learning — turning messy data into clear decisions.</p>
+          <div class="flex flex-wrap gap-3">
+            <a class="btn" href="#projects"><i class="fas fa-rocket"></i> View Projects</a>
+            <a class="btn" href="#contact"><i class="fas fa-envelope"></i> Get in touch</a>
+            <a class="btn" href="Resume_with_experience.pdf" download><i class="fas fa-file-download"></i> Resume</a>
+          </div>
+        </div>
+        <div class="reveal">
+          <div class="card">
+            <h3 class="text-xl font-semibold mb-2 text-teal-300">Quick Stats</h3>
+            <ul class="grid grid-cols-2 gap-3 text-sm">
+              <li><span class="text-gray-300">Location:</span> Illinois, USA</li>
+              <li><span class="text-gray-300">Degree:</span> M.S. Data Analytics</li>
+              <li><span class="text-gray-300">GPA:</span> 3.8–3.95 (current)</li>
+              <li><span class="text-gray-300">Focus:</span> NLP, DL, ML Systems</li>
+            </ul>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- CONTACT / FOOTER PARTICLES -->
-    <section id="contact">
-      <div class="center">
-        <div class="pill">Contact</div>
-        <h1>Let’s build.</h1>
-        <p>Open-source friendly. Drop me a line.</p>
-        <div class="socials">
-          <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer">LinkedIn</a>
-          <a href="https://github.com/" target="_blank" rel="noreferrer">GitHub</a>
-          <a href="mailto:you@example.com">Email</a>
+    <!-- About -->
+    <section id="about" class="section">
+      <div class="container">
+        <h2 class="text-3xl font-bold mb-6">About Me</h2>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="card reveal">
+            <p class="mb-3">Graduate Data Analytics student at the University of Illinois Springfield with a CS foundation. I combine statistical rigor, practical ML, and clean visualization to ship analyses that influence decisions.</p>
+            <p class="mb-3">Comfortable across the stack: data wrangling, feature engineering, model training/evaluation, and dashboarding. Recently focused on misinformation detection, sentiment-driven pricing, and deepfake detection.</p>
+            <p class="mb-1">Open to Data Analyst / ML Intern roles.</p>
+          </div>
+          <div class="card reveal">
+            <h3 class="text-xl font-semibold mb-3 text-teal-300">Education</h3>
+            <div class="relative pl-5 mb-6">
+              <span class="t-dot" style="top:2px"></span>
+              <h4 class="font-semibold">University of Illinois Springfield</h4>
+              <p class="text-sm opacity-80">M.S. Data Analytics • Jan 2024 – Present • GPA ~3.8–3.95</p>
+              <p class="text-sm opacity-80">ML, Big Data, Statistical Computation, Databases, Deep Learning, Data Viz</p>
+            </div>
+            <div class="relative pl-5">
+              <span class="t-dot" style="top:2px"></span>
+              <h4 class="font-semibold">TKR Engineering College</h4>
+              <p class="text-sm opacity-80">B.Tech Computer Science • 2019 – 2023 • GPA 3.3</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Skills -->
+    <section id="skills" class="section">
+      <div class="container">
+        <h2 class="text-3xl font-bold mb-6">Technical Skills</h2>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="card reveal">
+            <h3 class="text-xl font-semibold mb-2 text-teal-300">Languages</h3>
+            <div class="space-y-3">
+              <div>
+                <div class="flex justify-between text-sm"><span>Python</span><span>Expert</span></div>
+                <div class="w-full h-2 bg-gray-700 rounded"><div class="h-2 bg-teal-400 rounded" style="width:95%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-sm"><span>SQL</span><span>Advanced</span></div>
+                <div class="w-full h-2 bg-gray-700 rounded"><div class="h-2 bg-teal-400 rounded" style="width:90%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-sm"><span>R</span><span>Proficient</span></div>
+                <div class="w-full h-2 bg-gray-700 rounded"><div class="h-2 bg-teal-400 rounded" style="width:85%"></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="card reveal">
+            <h3 class="text-xl font-semibold mb-2 text-teal-300">Frameworks & Tools</h3>
+            <p class="mb-1">
+              <span class="badge">TensorFlow</span>
+              <span class="badge">Keras</span>
+              <span class="badge">scikit-learn</span>
+              <span class="badge">Transformers</span>
+              <span class="badge">Spark</span>
+              <span class="badge">Hadoop</span>
+              <span class="badge">Tableau</span>
+              <span class="badge">Power BI</span>
+              <span class="badge">Docker</span>
+              <span class="badge">Git/GitHub</span>
+              <span class="badge">Streamlit</span>
+              <span class="badge">Excel</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Experience -->
+    <section id="experience" class="section">
+      <div class="container">
+        <h2 class="text-3xl font-bold mb-6">Experience</h2>
+        <div class="grid gap-6 md:grid-cols-2">
+          <article class="card reveal">
+            <header class="mb-2">
+              <h3 class="text-xl font-semibold text-teal-300">Survey Data Analyst</h3>
+              <p class="text-sm opacity-80">BallotNow • Hyderabad, Telangana • Sep 2023 – Dec 2023</p>
+            </header>
+            <ul class="list-disc ml-6 space-y-2 text-sm">
+              <li>Coordinated survey schedules and field operations during election cycles.</li>
+              <li>Analyzed response data and prepared concise reports for election officials.</li>
+              <li>Drove community outreach to lift participation and data quality.</li>
+            </ul>
+          </article>
+          <article class="card reveal">
+            <header class="mb-2">
+              <h3 class="text-xl font-semibold text-teal-300">Data Analyst Intern</h3>
+              <p class="text-sm opacity-80">Greenfoods Pvt Ltd • Hyderabad • Apr 2023 – Sep 2023</p>
+            </header>
+            <ul class="list-disc ml-6 space-y-2 text-sm">
+              <li>Streamlined ingestion pipelines and automated analysis routines.</li>
+              <li>Conducted EDA to surface trends and opportunities.</li>
+              <li>Validated/cleaned datasets; delivered client-facing summaries.</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Projects -->
+    <section id="projects" class="section">
+      <div class="container">
+        <h2 class="text-3xl font-bold mb-6">Projects</h2>
+        <div class="grid gap-6 md:grid-cols-3">
+          <article class="card reveal">
+            <h3 class="text-lg font-semibold text-teal-300 mb-1">Fake News Detection Using LLMs & DL</h3>
+            <p class="text-sm mb-3">End-to-end pipeline predicting co-evolution iteration of synthetic articles using linguistic features, GloVe Bi-LSTM, and DistilBERT with back-translation augmentation.</p>
+            <p class="text-xs opacity-80 mb-3">Python • TensorFlow/Keras • Transformers • scikit-learn</p>
+            <div class="flex gap-2">
+              <a class="btn" href="#contact"><i class="fab fa-github"></i> Code</a>
+              <a class="btn" href="#publications"><i class="fas fa-book"></i> Paper</a>
+            </div>
+          </article>
+          <article class="card reveal">
+            <h3 class="text-lg font-semibold text-teal-300 mb-1">Deepfake Video Detection (Hybrid)</h3>
+            <p class="text-sm mb-3">Two-stream system: EfficientNetB0 visual pipeline fused with emotion vectors (FER) and custom focal loss; benchmarks with VideoMAE and classic baselines.</p>
+            <p class="text-xs opacity-80 mb-3">Python • TensorFlow • OpenCV • PyTorch</p>
+            <div class="flex gap-2">
+              <a class="btn" href="#contact"><i class="fab fa-github"></i> Code</a>
+            </div>
+          </article>
+          <article class="card reveal">
+            <h3 class="text-lg font-semibold text-teal-300 mb-1">House Price Prediction</h3>
+            <p class="text-sm mb-3">Predictive modeling across location/size/amenities with model comparison and calibration to improve generalization.</p>
+            <p class="text-xs opacity-80 mb-3">Python • scikit-learn • pandas</p>
+            <div class="flex gap-2">
+              <a class="btn" href="#contact"><i class="fab fa-github"></i> Code</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Publications -->
+    <section id="publications" class="section">
+      <div class="container">
+        <h2 class="text-3xl font-bold mb-6">Publications</h2>
+        <div class="grid gap-6 md:grid-cols-2">
+          <article class="card reveal">
+            <h3 class="text-lg font-semibold text-teal-300 mb-1">A Comprehensive Approach to Sentiment-Based Dynamic Pricing</h3>
+            <p class="text-sm mb-3">Real-time pricing adjustments using sentiment analysis with attention to fairness.</p>
+            <a class="btn" href="https://ijrpr.com/uploads/V5ISSUE11/IJRPR35607.pdf" target="_blank" rel="noopener"><i class="fas fa-link"></i> Read</a>
+          </article>
+          <article class="card reveal">
+            <h3 class="text-lg font-semibold text-teal-300 mb-1">Behavior-Based Incentivization & Predictive Analytics</h3>
+            <p class="text-sm mb-3">Machine learning for incentive design with synthetic datasets and model comparisons.</p>
+            <a class="btn" href="https://ijrpr.com/uploads/V5ISSUE11/IJRPR34678.pdf" target="_blank" rel="noopener"><i class="fas fa-link"></i> Read</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Awards / Volunteering -->
+    <section id="awards" class="section">
+      <div class="container">
+        <h2 class="text-3xl font-bold mb-6">Honors & Volunteering</h2>
+        <div class="grid gap-6 md:grid-cols-3">
+          <div class="card reveal">
+            <h3 class="text-lg font-semibold text-teal-300">Excellence in Event Leadership</h3>
+            <p class="text-sm opacity-90">Recognized for organizing and leading technical events.</p>
+            <p class="text-xs opacity-70 mt-2">May 2023</p>
+          </div>
+          <div class="card reveal">
+            <h3 class="text-lg font-semibold text-teal-300">Sports Achievement Award</h3>
+            <p class="text-sm opacity-90">Outstanding performance in university sports.</p>
+            <p class="text-xs opacity-70 mt-2">May 2023</p>
+          </div>
+          <div class="card reveal">
+            <h3 class="text-lg font-semibold text-teal-300">Event Coordinator — Friends2Support</h3>
+            <p class="text-sm opacity-90">Trained 3000+ students via online/offline sessions.</p>
+            <p class="text-xs opacity-70 mt-2">2020 – 2023</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="section">
+      <div class="container">
+        <h2 class="text-3xl font-bold mb-6">Contact</h2>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div class="card reveal">
+            <p class="mb-4">Open for collaborations and opportunities.</p>
+            <ul class="space-y-3">
+              <li class="flex items-center gap-3"><i class="fas fa-envelope text-xl text-gray-300"></i> notedevelopment@gmail.com</li>
+              <li class="flex items-center gap-3"><i class="fab fa-linkedin text-xl text-gray-300"></i> linkedin.com/in/shashank-cheppala</li>
+              <li class="flex items-center gap-3"><i class="fab fa-github text-xl text-gray-300"></i> github.com/shashank-cheppala</li>
+              <li class="flex items-center gap-3"><i class="fas fa-map-marker-alt text-xl text-gray-300"></i> Illinois, USA</li>
+            </ul>
+            <div class="mt-4 flex gap-3">
+              <a class="btn" href="mailto:notedevelopment@gmail.com"><i class="fas fa-paper-plane"></i> Email</a>
+            </div>
+          </div>
+          <form class="card reveal" name="contact" method="POST" data-netlify="true">
+            <input type="hidden" name="form-name" value="contact" />
+            <label class="block text-sm mb-1" for="name">Name</label>
+            <input id="name" name="name" class="w-full mb-3 px-3 py-2 rounded bg-gray-900 bg-opacity-60 border border-white border-opacity-10" required />
+            <label class="block text-sm mb-1" for="email">Email</label>
+            <input id="email" name="email" type="email" class="w-full mb-3 px-3 py-2 rounded bg-gray-900 bg-opacity-60 border border-white border-opacity-10" required />
+            <label class="block text-sm mb-1" for="msg">Message</label>
+            <textarea id="msg" name="message" rows="4" class="w-full mb-4 px-3 py-2 rounded bg-gray-900 bg-opacity-60 border border-white border-opacity-10" required></textarea>
+            <button class="btn" type="submit"><i class="fas fa-paper-plane"></i> Send</button>
+          </form>
         </div>
       </div>
     </section>
   </main>
 
-  <!-- libs: Three, GSAP, ScrollTrigger, Troika text (optional here) -->
-  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-  <script src="https://unpkg.com/three@0.160.0/examples/jsm/utils/BufferGeometryUtils.js"></script>
-  <script src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script>
-  <script src="https://unpkg.com/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <footer class="py-6 text-center">
+    <div class="container text-sm opacity-75">© <span id="year"></span> • Designed & Built by Shashank Cheppala</div>
+  </footer>
+
+  <!-- Audio (user-controlled only) -->
+  <audio id="bgm" preload="none" loop src="https://raw.githubusercontent.com/shashankcheppala/dump/0db9915a106ec20f425fce690578ca6b94332fe0/natural.mp3"></audio>
+  <button id="audioToggle" class="fixed right-4 bottom-4 btn" aria-pressed="false" title="Toggle music">
+    <i class="fas fa-volume-mute"></i>
+    <span class="sr-only">Toggle background music</span>
+  </button>
+
+  <button id="toTop" class="fixed left-4 bottom-4 btn hidden" title="Back to top"><i class="fas fa-arrow-up"></i></button>
+
   <script>
-  (() => {
-    // viewport fix for mobile
-    const setVH = () => document.documentElement.style.setProperty('--vh', window.innerHeight + 'px');
-    setVH(); addEventListener('resize', setVH);
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
 
-    // --- Three basics
-    const canvas = document.getElementById('scene');
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true, powerPreference:'high-performance' });
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
-    const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x0c111b, 0.015);
+    // Mobile menu
+    const menuBtn = document.getElementById('menuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    menuBtn.addEventListener('click', () => {
+      const open = mobileMenu.classList.toggle('hidden') === false;
+      menuBtn.setAttribute('aria-expanded', String(open));
+    }, { passive: true });
 
-    const camera = new THREE.PerspectiveCamera(55, innerWidth/innerHeight, 0.1, 200);
-    camera.position.set(0, 2.2, 7);
+    // Reveal on view (IntersectionObserver)
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) if (e.isIntersecting) { e.target.classList.add('active'); io.unobserve(e.target); }
+    }, { rootMargin: '0px 0px -10% 0px', threshold: 0.05 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-    function onResize(){
-      const w = innerWidth, h = innerHeight;
-      renderer.setSize(w, h);
-      camera.aspect = w/h; camera.updateProjectionMatrix();
-    }
-    addEventListener('resize', onResize); onResize();
+    // Lightweight cursor
+    const cursor = document.getElementById('cursor');
+    let raf;
+    window.addEventListener('pointermove', (e) => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+      });
+    }, { passive: true });
+    document.addEventListener('pointerdown', () => cursor.classList.add('big'), { passive: true });
+    document.addEventListener('pointerup', () => cursor.classList.remove('big'), { passive: true });
 
-    // Lights
-    const hemi = new THREE.HemisphereLight(0xdde8ff, 0x0b0f17, 1.0); scene.add(hemi);
-    const dir = new THREE.DirectionalLight(0xffffff, 1.2); dir.position.set(3,6,4); scene.add(dir);
+    // Back to top visibility
+    const toTop = document.getElementById('toTop');
+    const topIO = new IntersectionObserver(([entry]) => {
+      toTop.classList.toggle('hidden', entry.isIntersecting);
+    }, { threshold: 0 });
+    topIO.observe(document.querySelector('#home'));
+    toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-    // --- Ground
-    const groundGeo = new THREE.PlaneGeometry(80,80, 120,120);
-    groundGeo.rotateX(-Math.PI/2);
-    // small bumps
-    const pos = groundGeo.attributes.position;
-    for (let i=0;i<pos.count;i++){
-      const x=pos.getX(i), z=pos.getZ(i);
-      const r = Math.hypot(x*0.04, z*0.04);
-      const n = Math.sin(x*0.15)*Math.cos(z*0.1)*.3 + Math.exp(-r*r)*0.6;
-      pos.setY(i, n);
-    }
-    pos.needsUpdate = true; groundGeo.computeVertexNormals();
-    const ground = new THREE.Mesh(groundGeo, new THREE.MeshStandardMaterial({
-      color:0x111725, roughness:0.9, metalness:0.0
-    }));
-    scene.add(ground);
-
-    // --- Igloo-like dome (simple stylized hemisphere)
-    const domeGeo = new THREE.SphereGeometry(1.4, 48, 32, 0, Math.PI*2, 0, Math.PI/2);
-    domeGeo.rotateY(Math.PI*0.25);
-    const domeMat = new THREE.MeshPhysicalMaterial({
-      color:0xeef4ff, roughness:0.15, metalness:0.0, reflectivity:0.25,
-      transmission:0.0, thickness:0.2, clearcoat:0.4, clearcoatRoughness:0.4
-    });
-    const dome = new THREE.Mesh(domeGeo, domeMat);
-    dome.position.set(0, 1.0, -2.0);
-    scene.add(dome);
-
-    // --- Snow particles
-    const SNOW = 1800;
-    const snowGeo = new THREE.BufferGeometry();
-    const snowPos = new Float32Array(SNOW*3);
-    const snowVel = new Float32Array(SNOW);
-    for(let i=0;i<SNOW;i++){
-      snowPos[i*3+0] = (Math.random()-0.5)*40;
-      snowPos[i*3+1] = Math.random()*18 + 1;
-      snowPos[i*3+2] = (Math.random()-0.5)*40;
-      snowVel[i] = Math.random()*0.08 + 0.02;
-    }
-    snowGeo.setAttribute('position', new THREE.BufferAttribute(snowPos,3));
-    const snowMat = new THREE.PointsMaterial({ color:0xffffff, size:0.03, sizeAttenuation:true, transparent:true, opacity:0.9 });
-    const snow = new THREE.Points(snowGeo, snowMat); scene.add(snow);
-
-    // --- Gallery "ice blocks" (three boxes with frosty material)
-    const iceMat = new THREE.MeshPhysicalMaterial({
-      color:0xbfd7ff, roughness:0.15, metalness:0.0, transmission:0.85, thickness:0.6, ior:1.2, clearcoat:0.3, transparent:true
-    });
-    const blocks = [];
-    for(let i=0;i<3;i++){
-      const box = new THREE.Mesh(new THREE.BoxGeometry(1.2,1.2,1.2, 10,10,10), iceMat);
-      box.position.set((i-1)*2.2, 1.0, -5 - i*3.5);
-      box.rotation.y = Math.random()*Math.PI;
-      blocks.push(box); scene.add(box);
-    }
-
-    // --- Footer particle morph (sphere -> torus)
-    const COUNT = 4000;
-    const morph = new THREE.BufferGeometry();
-    const from = new Float32Array(COUNT*3);
-    const to = new Float32Array(COUNT*3);
-    // positions on sphere
-    for(let i=0;i<COUNT;i++){
-      const u = Math.random(), v = Math.random();
-      const theta = 2*Math.PI*u, phi = Math.acos(2*v-1);
-      const r = 1.2;
-      from[i*3+0] = r*Math.sin(phi)*Math.cos(theta);
-      from[i*3+1] = r*Math.cos(phi);
-      from[i*3+2] = r*Math.sin(phi)*Math.sin(theta);
-    }
-    // positions on torus
-    const R = 1.2, r = 0.45;
-    for(let i=0;i<COUNT;i++){
-      const u = Math.random()*Math.PI*2, v = Math.random()*Math.PI*2;
-      const x = (R + r*Math.cos(v))*Math.cos(u);
-      const y = r*Math.sin(v);
-      const z = (R + r*Math.cos(v))*Math.sin(u);
-      to[i*3+0]=x; to[i*3+1]=y; to[i*3+2]=z;
-    }
-    morph.setAttribute('position', new THREE.BufferAttribute(from.slice(),3));
-    const pm = new THREE.PointsMaterial({ size:0.02, color:0x9fc1ff, transparent:true, opacity:0.95 });
-    const pcloud = new THREE.Points(morph, pm);
-    pcloud.position.set(0, 1.2, -18); scene.add(pcloud);
-
-    // --- Animation state
-    let tMorph = 0; // 0..1
-    const clock = new THREE.Clock();
-
-    // --- GSAP Scroll
-    gsap.registerPlugin(ScrollTrigger);
-
-    // Camera rail: glide forward and down into the gallery
-    gsap.to(camera.position, {
-      z: 2.8, y: 1.6, ease: 'none',
-      scrollTrigger: { trigger: '#projects', start: 'top bottom', end: 'top top', scrub: 1 }
-    });
-    // Pan through blocks
-    gsap.to(camera.position, {
-      z: -7.5, y: 1.1, ease: 'none',
-      scrollTrigger: { trigger: '#projects', start: 'top top', end: 'bottom top', scrub: 1 }
-    });
-    // Footer morph progress
-    gsap.to({}, {
-      value: 1,
-      onUpdate: self => { tMorph = self.progress; },
-      scrollTrigger: { trigger:'#contact', start:'top bottom', end:'center center', scrub: 1 }
+    // Music toggle (no autoplay; respects user intent)
+    const audio = document.getElementById('bgm');
+    const audioToggle = document.getElementById('audioToggle');
+    audioToggle.addEventListener('click', async () => {
+      try {
+        if (audio.paused) { await audio.play(); audioToggle.setAttribute('aria-pressed', 'true'); audioToggle.querySelector('i').className = 'fas fa-volume-up'; }
+        else { audio.pause(); audioToggle.setAttribute('aria-pressed', 'false'); audioToggle.querySelector('i').className = 'fas fa-volume-mute'; }
+      } catch (_) {}
     });
 
-    // Loading badge
-    const loading = document.getElementById('loading');
-    setTimeout(()=> loading.textContent = 'Ready', 700);
-    setTimeout(()=> loading.style.display = 'none', 2400);
-
-    // --- Render loop
-    renderer.setAnimationLoop(()=>{
-      const dt = clock.getDelta();
-      // snow fall
-      const p = snow.geometry.attributes.position.array;
-      for(let i=0;i<SNOW;i++){
-        p[i*3+1] -= snowVel[i] + dt*0.2;
-        p[i*3+0] += Math.sin((p[i*3+1]+i)*0.02)*0.002;
-        if(p[i*3+1] < 0.4){ p[i*3+1] = 18.0; }
-      }
-      snow.geometry.attributes.position.needsUpdate = true;
-
-      // rotate blocks a bit
-      blocks.forEach((b,ix)=> { b.rotation.y += 0.003 + ix*0.001; });
-
-      // morph footer points
-      const pos = morph.attributes.position.array;
-      for(let i=0;i<COUNT;i++){
-        const ix3 = i*3;
-        pos[ix3+0] = from[ix3+0] * (1-tMorph) + to[ix3+0] * tMorph;
-        pos[ix3+1] = from[ix3+1] * (1-tMorph) + to[ix3+1] * tMorph;
-        pos[ix3+2] = from[ix3+2] * (1-tMorph) + to[ix3+2] * tMorph;
-      }
-      morph.attributes.position.needsUpdate = true;
-
-      renderer.render(scene, camera);
+    // Smooth anchor (manual for older browsers)
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        const id = a.getAttribute('href');
+        const el = document.querySelector(id);
+        if (!el) return;
+        e.preventDefault();
+        const y = window.scrollY + el.getBoundingClientRect().top - 8;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+        if (!mobileMenu.classList.contains('hidden')) mobileMenu.classList.add('hidden');
+      });
     });
-  })();
   </script>
 </body>
 </html>
-
