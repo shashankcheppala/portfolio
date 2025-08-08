@@ -1,131 +1,138 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Portfolio — Scroll Zoom Hero</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Scroll Sequence — Portfolio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-  :root{ --bg:#0a0a0c; --fg:#e9ecf1; --muted:#9aa3b2; }
+  :root{ --bg:#0a0a0c; --fg:#e9ecf1; --muted:#9aa3b2; --line:rgba(255,255,255,.08) }
   *{box-sizing:border-box}
   html,body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui}
   a{color:inherit;text-decoration:none}
-
-  /* === HERO (pinned) === */
-  .hero{
-    height: 200svh;              /* scroll distance for the effect */
-    position: relative;
-  }
-  .pin{
-    position: sticky; top:0;
-    height: 100svh;              /* true device viewport on mobile */
-    overflow: hidden;
-  }
-  .visual{
-    position:absolute; inset:0;
-    display:grid; place-items:center;
-    will-change: transform;
-  }
-  .visual img{
-    width:110%; height:110%;     /* bleed to avoid edges while scaling */
-    object-fit: cover;
-    transform: scale(1);
-    will-change: transform;
-    filter: brightness(.92) contrast(1.02) saturate(.98);
-  }
-  .headline{
-    position:absolute; inset:0; display:grid; place-items:center;
-    text-align:center; pointer-events:none;
-  }
-  h1{
-    margin:0; line-height:.94; letter-spacing:-.02em;
-    font-weight:900; font-size:clamp(40px,9vw,120px);
-    text-shadow: 0 6px 18px rgba(0,0,0,.4);
-  }
-
-  /* === CONTENT === */
-  section{min-height:100svh; display:flex; align-items:center; border-top:1px solid rgba(255,255,255,.08)}
-  .wrap{max-width:1100px;margin:0 auto;padding:0 24px}
-  h2{font-size:clamp(24px,3vw,40px);margin:0 0 10px}
+  /* Pinned sequence section */
+  .seq{height:260svh; position:relative; border-bottom:1px solid var(--line)}
+  .pin{position:sticky; top:0; height:100svh; display:grid; place-items:center; background:#06070a}
+  canvas{width:100vw; height:100svh; display:block}
+  /* Content after sequence */
+  section{min-height:100svh; display:flex; align-items:center}
+  .wrap{max-width:1100px; margin:0 auto; padding:0 24px}
+  h1{margin:0 0 12px; font-size:clamp(28px,4vw,56px)}
   .muted{color:var(--muted)}
-
-  footer{padding:60px 0;text-align:center;color:#9aa3b2}
+  footer{padding:60px 0; text-align:center; color:#9aa3b2}
 </style>
 </head>
 <body>
 
-  <!-- PINNED HERO SCROLL-ZOOM -->
-  <div class="hero">
-    <div class="pin">
-      <div class="visual">
-        <!-- REPLACE src with your own high-res image (e.g., media/hero.jpg) -->
-        <img id="heroImg" src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=2400&auto=format&fit=crop" alt="">
-      </div>
-      <div class="headline">
-        <h1>Shashank Cheppala</h1>
-      </div>
-    </div>
+<!-- SEQUENCE -->
+<div class="seq">
+  <div class="pin">
+    <canvas id="scene" aria-label="Scroll animation"></canvas>
   </div>
+</div>
 
-  <!-- CONTENT SECTIONS -->
-  <section id="work">
-    <div class="wrap">
-      <h2>Selected Work</h2>
-      <p class="muted">Put your projects here. The hero above pins while you scroll and zooms like Apple/Igloo intros.</p>
-    </div>
-  </section>
+<!-- CONTENT -->
+<section>
+  <div class="wrap">
+    <h1>Selected Work</h1>
+    <p class="muted">Replace with your portfolio sections. The animation above mirrors Apple/Igloo scroll-scrub behavior.</p>
+  </div>
+</section>
 
-  <section id="about">
-    <div class="wrap">
-      <h2>About</h2>
-      <p class="muted">MS Data Analytics @ UIS • NLP, CV, ML pipelines. Replace with your copy.</p>
-    </div>
-  </section>
+<footer>© <span id="y"></span> Your Name</footer>
 
-  <footer>© <span id="y"></span> Shashank Cheppala</footer>
+<script src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://unpkg.com/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script>
+document.getElementById('y').textContent = new Date().getFullYear();
+gsap.registerPlugin(ScrollTrigger);
 
-  <!-- GSAP -->
-  <script src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script>
-  <script src="https://unpkg.com/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-  <script>
-    document.getElementById('y').textContent = new Date().getFullYear();
-    gsap.registerPlugin(ScrollTrigger);
+/* ---------- Config ---------- */
+const FRAME_COUNT = 120;                     // set to your total frames
+const PATH = i => `media/sequence/frame_${String(i).padStart(4,'0')}.webp`;
+const DPR = Math.min(window.devicePixelRatio || 1, 1.5); // clamp for perf
 
-    const img = document.getElementById('heroImg');
+/* ---------- Setup canvas ---------- */
+const canvas = document.getElementById('scene');
+const ctx = canvas.getContext('2d');
+let img = new Image();
+let frame = 1;
+let loaded = new Array(FRAME_COUNT+1).fill(false);
+let naturalW = 1920, naturalH = 1080;       // update if your frames differ
 
-    // Main scroll-zoom: pin hero and scale image from 1 -> 1.75
-    gsap.to(img, {
-      scale: 1.75,
-      ease: "none",
-      scrollTrigger: {
-        trigger: ".hero",
-        start: "top top",
-        end: "bottom top",      // across the 200svh hero height
-        scrub: true,
-        pin: ".pin",            // pin only the inner viewport
-        anticipatePin: 1
-      }
-    });
+function setCanvasSize(){
+  const w = Math.floor(window.innerWidth * DPR);
+  const h = Math.floor(window.innerHeight * DPR);
+  canvas.width = w; canvas.height = h;
+  drawFrame(frame, true);
+}
+window.addEventListener('resize', setCanvasSize);
 
-    // Optional: fade headline slightly as you zoom
-    gsap.to(".headline", {
-      opacity: 0,
-      ease: "none",
-      scrollTrigger: {
-        trigger: ".hero",
-        start: "25% top",
-        end: "bottom top",
-        scrub: true
-      }
-    });
+/* ---------- Draw with cover-fit ---------- */
+function drawFrame(index, force=false){
+  if (!loaded[index] && !force) return; // skip until image available
+  const scale = Math.max(canvas.width / naturalW, canvas.height / naturalH);
+  const dw = naturalW * scale, dh = naturalH * scale;
+  const dx = (canvas.width  - dw) * 0.5;
+  const dy = (canvas.height - dh) * 0.5;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(img, dx, dy, dw, dh);
+}
 
-    // Reduce motion accessibility
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      ScrollTrigger.getAll().forEach(st => st.disable());
-      img.style.transform = 'scale(1.1)';
-      document.querySelector('.headline').style.opacity = '1';
+/* ---------- Progressive preload ---------- */
+function load(index){
+  if (index < 1 || index > FRAME_COUNT || loaded[index]) return;
+  const im = new Image();
+  im.src = PATH(index);
+  im.decode ? im.decode().catch(()=>{}) : null;
+  im.onload = () => {
+    loaded[index] = true;
+    // set natural size once
+    if (index === 1) { naturalW = im.naturalWidth || naturalW; naturalH = im.naturalHeight || naturalH; }
+    if (index === frame) { img = im; drawFrame(index); }
+  };
+}
+function warm(start, count=12){ for (let i=start; i<start+count && i<=FRAME_COUNT; i++) load(i); }
+
+/* ---------- Scroll binding ---------- */
+const st = ScrollTrigger.create({
+  trigger: '.seq',
+  start: 'top top',
+  end: 'bottom top',     // across the 260svh container
+  scrub: 0.1,
+  onUpdate: self => {
+    const p = self.progress;                         // 0..1
+    const target = Math.max(1, Math.min(FRAME_COUNT, Math.round(p * (FRAME_COUNT-1)) + 1));
+    if (target !== frame && loaded[target]) {
+      frame = target; img.src = PATH(frame); // swap ref so draw uses current
+      drawFrame(frame);
+      // Progressive lookahead
+      warm(frame+1, 6);
+    } else if (!loaded[target]) {
+      // If not loaded yet, kick off load
+      warm(target, 8);
     }
-  </script>
+  },
+  pin: '.pin',
+  anticipatePin: 1
+});
+
+/* ---------- Init ---------- */
+load(1);
+img.onload = () => drawFrame(1);
+img.src = PATH(1);
+warm(1, 20);          // initial warm preload
+setCanvasSize();
+
+/* ---------- Reduce motion fallback ---------- */
+if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  ScrollTrigger.getAll().forEach(s => s.disable());
+  // Just show first frame statically
+  drawFrame(1, true);
+}
+</script>
 </body>
 </html>
