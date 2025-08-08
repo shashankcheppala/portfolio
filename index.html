@@ -40,14 +40,14 @@
 <section id="work">
   <div class="wrap">
     <h1>Selected Work</h1>
-    <p class="muted">Replace with your projects. The hero above scrubs a looping image sequence (132 frames) on scroll.</p>
+    <p class="muted">Replace with your projects. The hero above scrubs a 241-frame sequence on scroll.</p>
   </div>
 </section>
 
 <section id="about">
   <div class="wrap">
     <h1>About</h1>
-    <p class="muted">MS Data Analytics @ UIS • NLP, CV, ML pipelines. Swap in your copy.</p>
+    <p class="muted">MS Data Analytics • NLP, CV, ML pipelines. Swap in your copy.</p>
   </div>
 </section>
 
@@ -61,60 +61,51 @@ document.getElementById('y').textContent = new Date().getFullYear();
 gsap.registerPlugin(ScrollTrigger);
 
 /* ===== Config ===== */
-const FRAME_COUNT = 132;  // you uploaded 132 frames
+const FRAME_COUNT = 241;  // exact number of frames you have
 const PATH = i => `media/sequence/frame_${String(i).padStart(4,'0')}.webp`;
-const DPR = Math.min(devicePixelRatio || 1, 1.5);
-const LOOP_MODE = "loop";   // "loop" or "pingpong"
+const DPR = Math.min(window.devicePixelRatio || 1, 1.25); // clamp for perf
+const LOOP_MODE = "loop"; // or "pingpong"
 
 /* ===== Canvas ===== */
 const canvas = document.getElementById('scene');
-const ctx = canvas.getContext('2d', { alpha:false });
-let naturalW = 1280, naturalH = 720; // updated on first decode
-let currentIndex = 1;
-let img = new Image();
-const cache = new Map();             // small decoded-frame cache
-const loaded = new Array(FRAME_COUNT+1).fill(false);
-const inflight = new Set();
-const MAX_CACHE = 16;
-const loadmsg = document.getElementById('loadmsg');
+const ctx = canvas.getContext('2d', { alpha:false, desynchronized:true });
+let naturalW = 1280, naturalH = 720; // updated after first decode
 
 function resize(){
   const w = Math.floor(innerWidth * DPR);
   const h = Math.floor(innerHeight * DPR);
   canvas.width = w; canvas.height = h;
-  draw(currentIndex, true);
 }
 addEventListener('resize', resize);
 
-function draw(index, force=false){
-  const im = cache.get(index) || (force ? img : null);
-  if (!im) return;
-  const scale = Math.max(canvas.width/naturalW, canvas.height/naturalH);
-  const dw = naturalW*scale, dh = naturalH*scale;
-  const dx = (canvas.width-dw)/2, dy=(canvas.height-dh)/2;
-  ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = 'high';
-  ctx.drawImage(im, dx, dy, dw, dh);
-}
+/* ===== Fast cache using ImageBitmap ===== */
+const loaded = new Array(FRAME_COUNT+1).fill(false);
+const inflight = new Set();
+const cache = new Map();              // LRU of ImageBitmaps
+const MAX_CACHE = 24;
 
-function keep(key, im){
-  cache.set(key, im);
+function keep(key, bmp){
+  cache.set(key, bmp);
   if (cache.size > MAX_CACHE) cache.delete(cache.keys().next().value);
 }
 
-function load(i){
-  if (i<1 || i>FRAME_COUNT || loaded[i] || inflight.has(i)) return;
-  inflight.add(i);
-  const im = new Image();
-  im.src = PATH(i);
-  (im.decode ? im.decode() : Promise.resolve()).catch(()=>{});
-  im.onload = () => {
-    loaded[i] = true; inflight.delete(i);
-    if (i===1){ naturalW = im.naturalWidth || naturalW; naturalH = im.naturalHeight || naturalH; }
-    keep(i, im);
-    if (i===currentIndex){ img = im; draw(i); }
-    if (loadmsg && loaded[1] && loaded[5] && loaded[10]) loadmsg.style.display = 'none';
-  };
+async function load(index){
+  if (index<1 || index>FRAME_COUNT || loaded[index] || inflight.has(index)) return;
+  inflight.add(index);
+  try {
+    const resp = await fetch(PATH(index), { cache: "force-cache" });
+    if (!resp.ok) throw new Error("404 " + PATH(index));
+    const blob = await resp.blob();
+    const bmp = await createImageBitmap(blob, { colorSpaceConversion: "default", premultiplyAlpha: "premultiply" });
+    if (index === 1) { naturalW = bmp.width; naturalH = bmp.height; }
+    loaded[index] = true; keep(index, bmp);
+    if (index === 1) { document.getElementById('loadmsg').style.display = 'none'; }
+  } catch(e) {
+    // Optional: show error for first frame
+    if (index === 1) document.getElementById('loadmsg').textContent = 'Frame not found: ' + PATH(1);
+  } finally {
+    inflight.delete(index);
+  }
 }
 
 function warm(start, n){
@@ -124,49 +115,61 @@ function warm(start, n){
   }
 }
 
-/* progress → frame index with loop modes */
-function indexFromProgress(p){
+/* ===== Progress → frame index ===== */
+function idxFromProgress(p){
   if (LOOP_MODE === "pingpong"){
-    const cycle = p*2;                // 0..2
-    const forward = cycle <= 1;
-    const t = forward ? cycle : 2-cycle; // 0..1..0
-    return Math.round(t*(FRAME_COUNT-1))+1;
+    const t = p*2; const fwd = t<=1; const u = fwd ? t : 2-t; // 0..1..0
+    return Math.round(u*(FRAME_COUNT-1))+1;
   } else {
-    const t = p % 1;
-    return Math.round(t*(FRAME_COUNT-1))+1;
+    const u = p % 1;
+    return Math.round(u*(FRAME_COUNT-1))+1;
   }
 }
 
-/* ===== Scroll binding ===== */
-const st = ScrollTrigger.create({
+/* ===== ScrollTrigger → target index ===== */
+let targetIndex = 1;
+ScrollTrigger.create({
   trigger: '.seq',
   start: 'top top',
-  end: '+=260%',        // extend scroll distance as needed
+  end: '+=260%',        // increase if you want longer scrub
   scrub: 0.1,
   pin: '.pin',
   anticipatePin: 1,
   onUpdate: self => {
-    const target = indexFromProgress(self.progress);
-    if (target !== currentIndex && loaded[target]){
-      currentIndex = target; img = cache.get(target) || img; draw(target);
-      warm(target+1, 8);
-    } else if (!loaded[target]) {
-      warm(target, 12);
-    }
+    targetIndex = idxFromProgress(self.progress);
+    warm(targetIndex, 12);
   }
 });
 
-/* ===== Init ===== */
-load(1);
-img.onload = () => draw(1);
-img.src = PATH(1);
-warm(1, 20);   // quick start
-resize();
+/* ===== RAF renderer with easing toward target ===== */
+let currentIndex = 1;
+function render(){
+  // ease toward target to avoid stutter; tune 0.2..0.35
+  const next = currentIndex + (targetIndex - currentIndex) * 0.25;
+  currentIndex = Math.max(1, Math.min(FRAME_COUNT, next));
 
-/* a11y: reduce motion */
+  const drawIndex = Math.round(currentIndex);
+  const bmp = cache.get(drawIndex);
+  if (bmp){
+    const scale = Math.max(canvas.width/naturalW, canvas.height/naturalH);
+    const dw = naturalW*scale, dh = naturalH*scale;
+    const dx = (canvas.width-dw)/2, dy=(canvas.height-dh)/2;
+    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(bmp, dx, dy, dw, dh);
+  } else {
+    // if we’re behind, request more around the current frame
+    warm(drawIndex, 16);
+  }
+  requestAnimationFrame(render);
+}
+
+/* ===== Init ===== */
+resize();
+load(1).then(()=>{ warm(1, 32); requestAnimationFrame(render); });
+
+/* a11y */
 if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
   ScrollTrigger.getAll().forEach(s => s.disable());
-  draw(1, true);
 }
 </script>
 </body>
