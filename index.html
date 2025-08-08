@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Scroll Sequence — Portfolio</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Portfolio — Scroll Sequence Hero</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
@@ -11,127 +11,162 @@
   *{box-sizing:border-box}
   html,body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui}
   a{color:inherit;text-decoration:none}
-  /* Pinned sequence section */
-  .seq{height:260svh; position:relative; border-bottom:1px solid var(--line)}
-  .pin{position:sticky; top:0; height:100svh; display:grid; place-items:center; background:#06070a}
-  canvas{width:100vw; height:100svh; display:block}
-  /* Content after sequence */
-  section{min-height:100svh; display:flex; align-items:center}
-  .wrap{max-width:1100px; margin:0 auto; padding:0 24px}
-  h1{margin:0 0 12px; font-size:clamp(28px,4vw,56px)}
-  .muted{color:var(--muted)}
-  footer{padding:60px 0; text-align:center; color:#9aa3b2}
+
+  /* Pinned sequence hero */
+  .seq{height:260svh;position:relative;border-bottom:1px solid var(--line)}
+  .pin{position:sticky;top:0;height:100svh;display:grid;place-items:center;background:#06070a}
+  canvas{width:100vw;height:100svh;display:block}
+  .loading{position:absolute;inset:auto 0 4vh;display:flex;justify-content:center;color:#98a2b3;font-size:14px;letter-spacing:.08em;text-transform:uppercase}
+
+  /* Content sections */
+  section{min-height:100svh;display:flex;align-items:center;border-top:1px solid var(--line)}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 24px}
+  h1{margin:0 0 12px;font-size:clamp(28px,4vw,56px)}
+  p.muted{color:var(--muted)}
+  footer{padding:60px 0;text-align:center;color:#9aa3b2}
 </style>
 </head>
 <body>
 
-<!-- SEQUENCE -->
+<!-- SEQUENCE HERO -->
 <div class="seq">
   <div class="pin">
     <canvas id="scene" aria-label="Scroll animation"></canvas>
+    <div id="loadmsg" class="loading">Loading…</div>
   </div>
 </div>
 
 <!-- CONTENT -->
-<section>
+<section id="work">
   <div class="wrap">
     <h1>Selected Work</h1>
-    <p class="muted">Replace with your portfolio sections. The animation above mirrors Apple/Igloo scroll-scrub behavior.</p>
+    <p class="muted">Replace with your projects. The hero above scrubs a looping image sequence (132 frames) on scroll.</p>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap">
+    <h1>About</h1>
+    <p class="muted">MS Data Analytics @ UIS • NLP, CV, ML pipelines. Swap in your copy.</p>
   </div>
 </section>
 
 <footer>© <span id="y"></span> Your Name</footer>
 
+<!-- GSAP -->
 <script src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="https://unpkg.com/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script>
 document.getElementById('y').textContent = new Date().getFullYear();
 gsap.registerPlugin(ScrollTrigger);
 
-/* ---------- Config ---------- */
-const FRAME_COUNT = 120;                     // set to your total frames
+/* ===== Config ===== */
+const FRAME_COUNT = 132;  // you uploaded 132 frames
 const PATH = i => `media/sequence/frame_${String(i).padStart(4,'0')}.webp`;
-const DPR = Math.min(window.devicePixelRatio || 1, 1.5); // clamp for perf
+const DPR = Math.min(devicePixelRatio || 1, 1.5);
+const LOOP_MODE = "loop";   // "loop" or "pingpong"
 
-/* ---------- Setup canvas ---------- */
+/* ===== Canvas ===== */
 const canvas = document.getElementById('scene');
-const ctx = canvas.getContext('2d');
+const ctx = canvas.getContext('2d', { alpha:false });
+let naturalW = 1280, naturalH = 720; // updated on first decode
+let currentIndex = 1;
 let img = new Image();
-let frame = 1;
-let loaded = new Array(FRAME_COUNT+1).fill(false);
-let naturalW = 1920, naturalH = 1080;       // update if your frames differ
+const cache = new Map();             // small decoded-frame cache
+const loaded = new Array(FRAME_COUNT+1).fill(false);
+const inflight = new Set();
+const MAX_CACHE = 16;
+const loadmsg = document.getElementById('loadmsg');
 
-function setCanvasSize(){
-  const w = Math.floor(window.innerWidth * DPR);
-  const h = Math.floor(window.innerHeight * DPR);
+function resize(){
+  const w = Math.floor(innerWidth * DPR);
+  const h = Math.floor(innerHeight * DPR);
   canvas.width = w; canvas.height = h;
-  drawFrame(frame, true);
+  draw(currentIndex, true);
 }
-window.addEventListener('resize', setCanvasSize);
+addEventListener('resize', resize);
 
-/* ---------- Draw with cover-fit ---------- */
-function drawFrame(index, force=false){
-  if (!loaded[index] && !force) return; // skip until image available
-  const scale = Math.max(canvas.width / naturalW, canvas.height / naturalH);
-  const dw = naturalW * scale, dh = naturalH * scale;
-  const dx = (canvas.width  - dw) * 0.5;
-  const dy = (canvas.height - dh) * 0.5;
-  ctx.clearRect(0,0,canvas.width,canvas.height);
+function draw(index, force=false){
+  const im = cache.get(index) || (force ? img : null);
+  if (!im) return;
+  const scale = Math.max(canvas.width/naturalW, canvas.height/naturalH);
+  const dw = naturalW*scale, dh = naturalH*scale;
+  const dx = (canvas.width-dw)/2, dy=(canvas.height-dh)/2;
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = 'high';
-  ctx.drawImage(img, dx, dy, dw, dh);
+  ctx.drawImage(im, dx, dy, dw, dh);
 }
 
-/* ---------- Progressive preload ---------- */
-function load(index){
-  if (index < 1 || index > FRAME_COUNT || loaded[index]) return;
+function keep(key, im){
+  cache.set(key, im);
+  if (cache.size > MAX_CACHE) cache.delete(cache.keys().next().value);
+}
+
+function load(i){
+  if (i<1 || i>FRAME_COUNT || loaded[i] || inflight.has(i)) return;
+  inflight.add(i);
   const im = new Image();
-  im.src = PATH(index);
-  im.decode ? im.decode().catch(()=>{}) : null;
+  im.src = PATH(i);
+  (im.decode ? im.decode() : Promise.resolve()).catch(()=>{});
   im.onload = () => {
-    loaded[index] = true;
-    // set natural size once
-    if (index === 1) { naturalW = im.naturalWidth || naturalW; naturalH = im.naturalHeight || naturalH; }
-    if (index === frame) { img = im; drawFrame(index); }
+    loaded[i] = true; inflight.delete(i);
+    if (i===1){ naturalW = im.naturalWidth || naturalW; naturalH = im.naturalHeight || naturalH; }
+    keep(i, im);
+    if (i===currentIndex){ img = im; draw(i); }
+    if (loadmsg && loaded[1] && loaded[5] && loaded[10]) loadmsg.style.display = 'none';
   };
 }
-function warm(start, count=12){ for (let i=start; i<start+count && i<=FRAME_COUNT; i++) load(i); }
 
-/* ---------- Scroll binding ---------- */
+function warm(start, n){
+  for (let k=0;k<n;k++){
+    const idx = ((start-1+k) % FRAME_COUNT) + 1; // wrap lookahead
+    load(idx);
+  }
+}
+
+/* progress → frame index with loop modes */
+function indexFromProgress(p){
+  if (LOOP_MODE === "pingpong"){
+    const cycle = p*2;                // 0..2
+    const forward = cycle <= 1;
+    const t = forward ? cycle : 2-cycle; // 0..1..0
+    return Math.round(t*(FRAME_COUNT-1))+1;
+  } else {
+    const t = p % 1;
+    return Math.round(t*(FRAME_COUNT-1))+1;
+  }
+}
+
+/* ===== Scroll binding ===== */
 const st = ScrollTrigger.create({
   trigger: '.seq',
   start: 'top top',
-  end: 'bottom top',     // across the 260svh container
+  end: '+=260%',        // extend scroll distance as needed
   scrub: 0.1,
-  onUpdate: self => {
-    const p = self.progress;                         // 0..1
-    const target = Math.max(1, Math.min(FRAME_COUNT, Math.round(p * (FRAME_COUNT-1)) + 1));
-    if (target !== frame && loaded[target]) {
-      frame = target; img.src = PATH(frame); // swap ref so draw uses current
-      drawFrame(frame);
-      // Progressive lookahead
-      warm(frame+1, 6);
-    } else if (!loaded[target]) {
-      // If not loaded yet, kick off load
-      warm(target, 8);
-    }
-  },
   pin: '.pin',
-  anticipatePin: 1
+  anticipatePin: 1,
+  onUpdate: self => {
+    const target = indexFromProgress(self.progress);
+    if (target !== currentIndex && loaded[target]){
+      currentIndex = target; img = cache.get(target) || img; draw(target);
+      warm(target+1, 8);
+    } else if (!loaded[target]) {
+      warm(target, 12);
+    }
+  }
 });
 
-/* ---------- Init ---------- */
+/* ===== Init ===== */
 load(1);
-img.onload = () => drawFrame(1);
+img.onload = () => draw(1);
 img.src = PATH(1);
-warm(1, 20);          // initial warm preload
-setCanvasSize();
+warm(1, 20);   // quick start
+resize();
 
-/* ---------- Reduce motion fallback ---------- */
-if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+/* a11y: reduce motion */
+if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
   ScrollTrigger.getAll().forEach(s => s.disable());
-  // Just show first frame statically
-  drawFrame(1, true);
+  draw(1, true);
 }
 </script>
 </body>
