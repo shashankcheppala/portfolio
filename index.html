@@ -1,254 +1,276 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Shashank Cheppala — Portfolio</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
-
-<style>
-  :root{
-    --bg:#0b0c10; --fg:#e9ecf1; --muted:#9aa3b2;
-    --line:rgba(255,255,255,.08); --card:#11131a; --acc:#9fd8ff;
-    --max:1140px;
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui}
-  a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
-
-  /* Top nav */
-  .nav{position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:60;display:flex;gap:10px;
-       padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:rgba(20,22,30,.45);backdrop-filter:blur(8px)}
-  .nav a{color:#cfd6e6;font-size:13px;padding:6px 10px;border-radius:999px}
-  .nav a:hover{background:rgba(255,255,255,.06)}
-
-  /* HERO (scroll-scrubbed video) */
-  .hero{height:200svh;position:relative;border-bottom:1px solid var(--line)}
-  .pin{position:sticky;top:0;height:100svh;overflow:hidden}
-  .hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.92) saturate(.98)}
-  .headline{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;text-align:center}
-  .headline h1{margin:0;font-size:clamp(40px,9vw,120px);letter-spacing:-.02em;line-height:.94;font-weight:900;text-shadow:0 6px 18px rgba(0,0,0,.45)}
-  .sub{margin-top:8px;color:#c9d3e6;font-weight:600;font-size:clamp(14px,2vw,18px);opacity:.9}
-  .loader{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);font-size:12px;color:#9aa3b2;letter-spacing:.12em;text-transform:uppercase}
-
-  /* Sections */
-  section{padding:70px 0;border-top:1px solid var(--line)}
-  .wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
-  h2{margin:0 0 16px;font-size:clamp(22px,2.6vw,32px)}
-  p.muted{color:var(--muted);margin:6px 0 0}
-
-  /* Grids / cards */
-  .grid{display:grid;gap:16px}
-  @media(min-width:860px){ .grid.cols-2{grid-template-columns:repeat(2,1fr)} .grid.cols-3{grid-template-columns:repeat(3,1fr)} }
-  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;transition:transform .25s ease,border-color .25s ease}
-  .card:hover{transform:translateY(-3px);border-color:rgba(159,216,255,.35)}
-  .pill{display:inline-block;padding:6px 10px;border:1px solid var(--line);border-radius:999px;margin:6px 8px 0 0;font-size:12px;color:#dfe6f5}
-
-  /* Footer */
-  footer{padding:48px 0;text-align:center;color:#9aa3b2;border-top:1px solid var(--line)}
-</style>
+  <meta charset="utf-8" />
+  <title>Shanks — Interactive 3D Portfolio</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+  <style>
+    /* ---- Base ---- */
+    :root {
+      --bg:#0c111b; --fg:#e8ebf2; --muted:#b6b9c6; --accent:#7ea7ff;
+      --vh:100vh; /* set at runtime for mobile safe area */
+    }
+    html,body { height:100%; background:var(--bg); color:var(--fg); margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;}
+    a { color: var(--accent); text-decoration: none; }
+    .wrap { position: relative; z-index: 2; }
+    /* ---- Canvas ---- */
+    #scene { position: fixed; inset:0; display:block; z-index:1; }
+    /* ---- Sections ---- */
+    section {
+      position: relative; min-height: var(--vh);
+      display:flex; align-items:center; justify-content:center; padding:6rem 1.5rem;
+    }
+    .center {
+      max-width: 960px; width:100%; text-align: center;
+      backdrop-filter: blur(2px);
+    }
+    h1,h2 { margin:0 0 .5rem; letter-spacing:.5px }
+    h1 { font-size: clamp(2rem, 5vw, 4rem); }
+    h2 { font-size: clamp(1.4rem, 3.2vw, 2rem); color:var(--muted); font-weight:500 }
+    p { color: var(--muted); line-height:1.6; margin:.75rem auto 0; max-width:70ch }
+    /* Cards / gallery */
+    .cards { display:grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap:1rem; margin-top:1.5rem }
+    .card {
+      border:1px solid rgba(255,255,255,.07); border-radius:12px; padding:1rem 1.1rem;
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+    .pill { display:inline-block; padding:.25rem .6rem; border:1px solid rgba(255,255,255,.14); border-radius:999px; color:#cfe1ff; font-size:.8rem; letter-spacing:.4px }
+    /* Footer socials */
+    .socials { display:flex; gap:1rem; justify-content:center; margin-top:1rem; flex-wrap:wrap }
+    .socials a { padding:.4rem .7rem; border:1px solid rgba(255,255,255,.12); border-radius:10px }
+    /* Subtle top gradient to lift text */
+    .fadeTop, .fadeBottom {
+      position: fixed; left:0; right:0; height:12vh; z-index:2; pointer-events:none;
+    }
+    .fadeTop { top:0; background:linear-gradient(var(--bg),transparent) }
+    .fadeBottom { bottom:0; background:linear-gradient(transparent,var(--bg)) }
+    /* Loading badge */
+    #loading {
+      position: fixed; top:12px; right:12px; z-index:3; padding:.4rem .6rem; font-size:.8rem;
+      border:1px solid rgba(255,255,255,.15); border-radius:8px; color:#c8d7ff; background:rgba(255,255,255,.03)
+    }
+    @media (max-width:560px){ .cards{grid-template-columns:1fr} }
+  </style>
 </head>
 <body>
+  <canvas id="scene" aria-hidden="true"></canvas>
+  <div class="fadeTop"></div><div class="fadeBottom"></div>
+  <div id="loading">Loading…</div>
 
-<nav class="nav">
-  <a href="#intro">Intro</a>
-  <a href="#work">Work</a>
-  <a href="#skills">Skills</a>
-  <a href="#experience">Experience</a>
-  <a href="#publications">Publications</a>
-  <a href="#contact">Contact</a>
-</nav>
-
-<!-- HERO -->
-<div class="hero" id="intro">
-  <div class="pin">
-    <video id="hero" preload="auto" playsinline muted>
-      <source src="media/hero.webm" type="video/webm" />
-      <source src="media/hero.mp4" type="video/mp4" />
-    </video>
-    <div class="headline">
-      <div>
-        <h1>Shashank Cheppala</h1>
-        <div class="sub">MS Data Analytics @ UIS — NLP · CV · ML Pipelines</div>
+  <main class="wrap">
+    <!-- HERO -->
+    <section id="hero">
+      <div class="center">
+        <div class="pill">Shanks — MSDA</div>
+        <h1>Interactive Data Portfolio</h1>
+        <h2>WebGL + Scroll-driven 3D. Lightweight. Production-ready.</h2>
+        <p>Scroll to explore projects. The 3D scene and camera react in real-time. Footer ends with a particle morph moment.</p>
       </div>
-    </div>
-    <div id="load" class="loader">Loading…</div>
-  </div>
-</div>
+    </section>
 
-<!-- SUMMARY / CTA -->
-<section>
-  <div class="wrap">
-    <h2>Summary</h2>
-    <p class="muted">Data analyst/engineer focused on practical NLP and computer vision. Strong with Python, Spark, TensorFlow/PyTorch, and end-to-end pipelines (ingestion → modeling → dashboards). GPA 3.8.</p>
-  </div>
-</section>
-
-<!-- WORK -->
-<section id="work">
-  <div class="wrap">
-    <h2>Selected Work</h2>
-    <div class="grid cols-2">
-      <div class="card">
-        <strong>Fake News Detection — LLM & Deep Learning</strong>
-        <p class="muted">Predicts co-evolution iteration using linguistic features, LogReg/RF, GloVe-BiLSTM, DistilBERT, and back-translation augmentation.</p>
-        <div><span class="pill">Python</span><span class="pill">TensorFlow</span><span class="pill">Hugging Face</span></div>
+    <!-- PROJECTS -->
+    <section id="projects">
+      <div class="center">
+        <div class="pill">Projects</div>
+        <h1>Selected Work</h1>
+        <div class="cards">
+          <div class="card"><h3>Fake News Evolution (NLP)</h3><p>DistilBERT & LSTM classification, trend viz, augmentation.</p></div>
+          <div class="card"><h3>Deepfake Detection</h3><p>Hybrid CNN + emotion fusion, EfficientNetB0, focal loss.</p></div>
+          <div class="card"><h3>Mental Health Crisis</h3><p>Real-time prediction pipeline with streaming inference.</p></div>
+          <div class="card"><h3>Diabetes Prediction</h3><p>Soft-voting ensemble, SHAP insights, clean deployment.</p></div>
+        </div>
       </div>
-      <div class="card">
-        <strong>Emotion-Aware Hybrid Deepfake Detection</strong>
-        <p class="muted">Two-stream EfficientNetB0 + temporal Conv1D fused with per-frame emotion vectors (FER+MTCNN). VideoMAE baselines. Custom focal loss.</p>
-        <div><span class="pill">TensorFlow</span><span class="pill">PyTorch</span><span class="pill">OpenCV</span></div>
+    </section>
+
+    <!-- CONTACT / FOOTER PARTICLES -->
+    <section id="contact">
+      <div class="center">
+        <div class="pill">Contact</div>
+        <h1>Let’s build.</h1>
+        <p>Open-source friendly. Drop me a line.</p>
+        <div class="socials">
+          <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer">LinkedIn</a>
+          <a href="https://github.com/" target="_blank" rel="noreferrer">GitHub</a>
+          <a href="mailto:you@example.com">Email</a>
+        </div>
       </div>
-      <div class="card">
-        <strong>Realtime Risk Scoring (Stream)</strong>
-        <p class="muted">Kafka ingestion, Spark feature store, streaming inference with dashboard KPIs.</p>
-        <div><span class="pill">Spark</span><span class="pill">Kafka</span><span class="pill">MLOps</span></div>
-      </div>
-      <div class="card">
-        <strong>Tech-News Evolution Mining</strong>
-        <p class="muted">Trend mining, sentiment/complexity evolution, LR/RF/LSTM/DistilBERT classifiers, and co-evolution visualization.</p>
-        <div><span class="pill">NLP</span><span class="pill">Visualization</span></div>
-      </div>
-    </div>
-  </div>
-</section>
+    </section>
+  </main>
 
-<!-- SKILLS -->
-<section id="skills">
-  <div class="wrap">
-    <h2>Skills</h2>
-    <div class="grid cols-3">
-      <div class="card"><strong>Programming</strong><p class="muted">Python, SQL, R</p></div>
-      <div class="card"><strong>Big Data</strong><p class="muted">Spark (PySpark, Spark SQL), Hadoop, Kafka</p></div>
-      <div class="card"><strong>ML</strong><p class="muted">scikit-learn, TensorFlow, Keras, Hugging Face, DistilBERT, GloVe</p></div>
-      <div class="card"><strong>Viz & Tools</strong><p class="muted">pandas, NumPy, matplotlib, seaborn, GeoPandas, Tableau, Power BI, Excel</p></div>
-      <div class="card"><strong>Platforms</strong><p class="muted">Colab, Jupyter, Streamlit, Docker, Git/GitHub, PyCharm</p></div>
-      <div class="card"><strong>Soft</strong><p class="muted">Leadership, Communication, Public Speaking, Time Mgmt, Tech Writing</p></div>
-    </div>
-  </div>
-</section>
+  <!-- libs: Three, GSAP, ScrollTrigger, Troika text (optional here) -->
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+  <script src="https://unpkg.com/three@0.160.0/examples/jsm/utils/BufferGeometryUtils.js"></script>
+  <script src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://unpkg.com/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script>
+  (() => {
+    // viewport fix for mobile
+    const setVH = () => document.documentElement.style.setProperty('--vh', window.innerHeight + 'px');
+    setVH(); addEventListener('resize', setVH);
 
-<!-- EXPERIENCE -->
-<section id="experience">
-  <div class="wrap">
-    <h2>Experience</h2>
-    <div class="grid cols-2">
-      <div class="card">
-        <strong>Survey Data Analyst — BallotNow</strong>
-        <p class="muted">Sep 2023 – Dec 2023 · Hyderabad, IN</p>
-        <ul class="muted" style="margin:8px 0 0 16px">
-          <li>Coordinated survey schedules during election cycles; improved digital workflows.</li>
-          <li>Analyzed data for election officials; produced concise report summaries.</li>
-          <li>Led outreach to increase participation.</li>
-        </ul>
-      </div>
-      <div class="card">
-        <strong>Data Analyst Intern — Greenfoods Pvt. Ltd.</strong>
-        <p class="muted">Apr 2023 – Sep 2023 · Hyderabad, IN</p>
-        <ul class="muted" style="margin:8px 0 0 16px">
-          <li>Optimized data mining/collection pipelines and automated recurring analysis.</li>
-          <li>Performed EDA, validation/cleanup, and client-ready reporting.</li>
-        </ul>
-      </div>
-      <div class="card">
-        <strong>Education</strong>
-        <ul class="muted" style="margin:8px 0 0 16px">
-          <li>University of Illinois Springfield — MS Data Analytics (GPA 3.8)</li>
-          <li>TKR Engineering College — B.Tech CSE (GPA 3.3)</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
+    // --- Three basics
+    const canvas = document.getElementById('scene');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true, powerPreference:'high-performance' });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x0c111b, 0.015);
 
-<!-- PUBLICATIONS -->
-<section id="publications">
-  <div class="wrap">
-    <h2>Publications</h2>
-    <div class="grid cols-2">
-      <div class="card">
-        <strong>A Comprehensive Approach to Sentiment-Based Dynamic Pricing</strong>
-        <p class="muted">Real-time pricing from review/news sentiment with fairness emphasis.</p>
-        <a href="https://ijrpr.com/uploads/V5ISSUE11/IJRPR35607.pdf" target="_blank" rel="noopener">Paper</a>
-      </div>
-      <div class="card">
-        <strong>Behavior-Based Incentivization and Predictive Analytics</strong>
-        <p class="muted">Synthetic datasets, LR/RF models, and incentive effectiveness analysis.</p>
-        <a href="https://ijrpr.com/uploads/V5ISSUE11/IJRPR34678.pdf" target="_blank" rel="noopener">Paper</a>
-      </div>
-    </div>
-  </div>
-</section>
+    const camera = new THREE.PerspectiveCamera(55, innerWidth/innerHeight, 0.1, 200);
+    camera.position.set(0, 2.2, 7);
 
-<!-- CONTACT -->
-<section id="contact">
-  <div class="wrap">
-    <h2>Contact</h2>
-    <div class="card">
-      <p>Email: <a href="mailto:notedevelopment@gmail.com">notedevelopment@gmail.com</a></p>
-      <p>LinkedIn: <a href="https://www.linkedin.com/in/shashank-cheppala-6455ab1a4" target="_blank" rel="noopener">/in/shashank-cheppala-6455ab1a4</a></p>
-    </div>
-  </div>
-</section>
-
-<footer>© <span id="y"></span> Shashank Cheppala</footer>
-
-<!-- libs -->
-<script src="https://unpkg.com/lenis@1.0.44/dist/lenis.min.js"></script>
-<script src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script>
-<script src="https://unpkg.com/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-
-<script>
-document.getElementById('y').textContent = new Date().getFullYear();
-gsap.registerPlugin(ScrollTrigger);
-
-/* Smooth scroll (stabilizes ScrollTrigger updates) */
-const lenis = new Lenis({ lerp: 0.12, wheelMultiplier: 1.0, smoothWheel: true });
-function raf(t){ lenis.raf(t); requestAnimationFrame(raf) } requestAnimationFrame(raf);
-
-/* Scroll-scrubbed Video */
-const vid = document.getElementById('hero');
-const loader = document.getElementById('load');
-
-// Fallback: show loader until first frame available
-vid.addEventListener('loadeddata', () => { loader.style.display='none'; vid.pause(); vid.currentTime = 0; });
-
-let duration = 0;
-vid.addEventListener('loadedmetadata', () => {
-  duration = vid.duration || 4; // your clip is ~4s
-  gsap.to({}, {
-    scrollTrigger: {
-      trigger: '.hero',
-      start: 'top top',
-      end: 'bottom top',
-      scrub: 0.15,
-      pin: '.pin',
-      anticipatePin: 1,
-      onUpdate: self => {
-        // Map scroll progress [0..1] to the video timeline
-        const t = duration * self.progress;
-        if (Math.abs((vid.currentTime||0) - t) > 0.01) vid.currentTime = t;
-      }
+    function onResize(){
+      const w = innerWidth, h = innerHeight;
+      renderer.setSize(w, h);
+      camera.aspect = w/h; camera.updateProjectionMatrix();
     }
-  });
-});
+    addEventListener('resize', onResize); onResize();
 
-// Mobile: if performance is poor, just play once on first scroll
-if (/Mobi|Android/i.test(navigator.userAgent)) {
-  let started = false;
-  const startPlay = () => {
-    if (!started && vid.readyState >= 2) { vid.play().catch(()=>{}); started = true; }
-  };
-  window.addEventListener('scroll', startPlay, { once:true, passive:true });
-  window.addEventListener('touchstart', startPlay, { once:true, passive:true });
-}
+    // Lights
+    const hemi = new THREE.HemisphereLight(0xdde8ff, 0x0b0f17, 1.0); scene.add(hemi);
+    const dir = new THREE.DirectionalLight(0xffffff, 1.2); dir.position.set(3,6,4); scene.add(dir);
 
-// Reduced motion users: don't scrub
-if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-  vid.removeAttribute('preload');
-}
-</script>
+    // --- Ground
+    const groundGeo = new THREE.PlaneGeometry(80,80, 120,120);
+    groundGeo.rotateX(-Math.PI/2);
+    // small bumps
+    const pos = groundGeo.attributes.position;
+    for (let i=0;i<pos.count;i++){
+      const x=pos.getX(i), z=pos.getZ(i);
+      const r = Math.hypot(x*0.04, z*0.04);
+      const n = Math.sin(x*0.15)*Math.cos(z*0.1)*.3 + Math.exp(-r*r)*0.6;
+      pos.setY(i, n);
+    }
+    pos.needsUpdate = true; groundGeo.computeVertexNormals();
+    const ground = new THREE.Mesh(groundGeo, new THREE.MeshStandardMaterial({
+      color:0x111725, roughness:0.9, metalness:0.0
+    }));
+    scene.add(ground);
+
+    // --- Igloo-like dome (simple stylized hemisphere)
+    const domeGeo = new THREE.SphereGeometry(1.4, 48, 32, 0, Math.PI*2, 0, Math.PI/2);
+    domeGeo.rotateY(Math.PI*0.25);
+    const domeMat = new THREE.MeshPhysicalMaterial({
+      color:0xeef4ff, roughness:0.15, metalness:0.0, reflectivity:0.25,
+      transmission:0.0, thickness:0.2, clearcoat:0.4, clearcoatRoughness:0.4
+    });
+    const dome = new THREE.Mesh(domeGeo, domeMat);
+    dome.position.set(0, 1.0, -2.0);
+    scene.add(dome);
+
+    // --- Snow particles
+    const SNOW = 1800;
+    const snowGeo = new THREE.BufferGeometry();
+    const snowPos = new Float32Array(SNOW*3);
+    const snowVel = new Float32Array(SNOW);
+    for(let i=0;i<SNOW;i++){
+      snowPos[i*3+0] = (Math.random()-0.5)*40;
+      snowPos[i*3+1] = Math.random()*18 + 1;
+      snowPos[i*3+2] = (Math.random()-0.5)*40;
+      snowVel[i] = Math.random()*0.08 + 0.02;
+    }
+    snowGeo.setAttribute('position', new THREE.BufferAttribute(snowPos,3));
+    const snowMat = new THREE.PointsMaterial({ color:0xffffff, size:0.03, sizeAttenuation:true, transparent:true, opacity:0.9 });
+    const snow = new THREE.Points(snowGeo, snowMat); scene.add(snow);
+
+    // --- Gallery "ice blocks" (three boxes with frosty material)
+    const iceMat = new THREE.MeshPhysicalMaterial({
+      color:0xbfd7ff, roughness:0.15, metalness:0.0, transmission:0.85, thickness:0.6, ior:1.2, clearcoat:0.3, transparent:true
+    });
+    const blocks = [];
+    for(let i=0;i<3;i++){
+      const box = new THREE.Mesh(new THREE.BoxGeometry(1.2,1.2,1.2, 10,10,10), iceMat);
+      box.position.set((i-1)*2.2, 1.0, -5 - i*3.5);
+      box.rotation.y = Math.random()*Math.PI;
+      blocks.push(box); scene.add(box);
+    }
+
+    // --- Footer particle morph (sphere -> torus)
+    const COUNT = 4000;
+    const morph = new THREE.BufferGeometry();
+    const from = new Float32Array(COUNT*3);
+    const to = new Float32Array(COUNT*3);
+    // positions on sphere
+    for(let i=0;i<COUNT;i++){
+      const u = Math.random(), v = Math.random();
+      const theta = 2*Math.PI*u, phi = Math.acos(2*v-1);
+      const r = 1.2;
+      from[i*3+0] = r*Math.sin(phi)*Math.cos(theta);
+      from[i*3+1] = r*Math.cos(phi);
+      from[i*3+2] = r*Math.sin(phi)*Math.sin(theta);
+    }
+    // positions on torus
+    const R = 1.2, r = 0.45;
+    for(let i=0;i<COUNT;i++){
+      const u = Math.random()*Math.PI*2, v = Math.random()*Math.PI*2;
+      const x = (R + r*Math.cos(v))*Math.cos(u);
+      const y = r*Math.sin(v);
+      const z = (R + r*Math.cos(v))*Math.sin(u);
+      to[i*3+0]=x; to[i*3+1]=y; to[i*3+2]=z;
+    }
+    morph.setAttribute('position', new THREE.BufferAttribute(from.slice(),3));
+    const pm = new THREE.PointsMaterial({ size:0.02, color:0x9fc1ff, transparent:true, opacity:0.95 });
+    const pcloud = new THREE.Points(morph, pm);
+    pcloud.position.set(0, 1.2, -18); scene.add(pcloud);
+
+    // --- Animation state
+    let tMorph = 0; // 0..1
+    const clock = new THREE.Clock();
+
+    // --- GSAP Scroll
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Camera rail: glide forward and down into the gallery
+    gsap.to(camera.position, {
+      z: 2.8, y: 1.6, ease: 'none',
+      scrollTrigger: { trigger: '#projects', start: 'top bottom', end: 'top top', scrub: 1 }
+    });
+    // Pan through blocks
+    gsap.to(camera.position, {
+      z: -7.5, y: 1.1, ease: 'none',
+      scrollTrigger: { trigger: '#projects', start: 'top top', end: 'bottom top', scrub: 1 }
+    });
+    // Footer morph progress
+    gsap.to({}, {
+      value: 1,
+      onUpdate: self => { tMorph = self.progress; },
+      scrollTrigger: { trigger:'#contact', start:'top bottom', end:'center center', scrub: 1 }
+    });
+
+    // Loading badge
+    const loading = document.getElementById('loading');
+    setTimeout(()=> loading.textContent = 'Ready', 700);
+    setTimeout(()=> loading.style.display = 'none', 2400);
+
+    // --- Render loop
+    renderer.setAnimationLoop(()=>{
+      const dt = clock.getDelta();
+      // snow fall
+      const p = snow.geometry.attributes.position.array;
+      for(let i=0;i<SNOW;i++){
+        p[i*3+1] -= snowVel[i] + dt*0.2;
+        p[i*3+0] += Math.sin((p[i*3+1]+i)*0.02)*0.002;
+        if(p[i*3+1] < 0.4){ p[i*3+1] = 18.0; }
+      }
+      snow.geometry.attributes.position.needsUpdate = true;
+
+      // rotate blocks a bit
+      blocks.forEach((b,ix)=> { b.rotation.y += 0.003 + ix*0.001; });
+
+      // morph footer points
+      const pos = morph.attributes.position.array;
+      for(let i=0;i<COUNT;i++){
+        const ix3 = i*3;
+        pos[ix3+0] = from[ix3+0] * (1-tMorph) + to[ix3+0] * tMorph;
+        pos[ix3+1] = from[ix3+1] * (1-tMorph) + to[ix3+1] * tMorph;
+        pos[ix3+2] = from[ix3+2] * (1-tMorph) + to[ix3+2] * tMorph;
+      }
+      morph.attributes.position.needsUpdate = true;
+
+      renderer.render(scene, camera);
+    });
+  })();
+  </script>
 </body>
 </html>
+
