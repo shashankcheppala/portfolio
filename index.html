@@ -1,46 +1,59 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Shashank Cheppala — Portfolio</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+
 <style>
-  :root{ --bg:#0b0c10; --fg:#e9ecf1; --muted:#9aa3b2; --line:rgba(255,255,255,.08); --acc:#9fd8ff; --card:#11131a }
+  :root{
+    --bg:#0b0c10; --fg:#e9ecf1; --muted:#9aa3b2;
+    --line:rgba(255,255,255,.08); --card:#11131a; --acc:#9fd8ff;
+    --max:1140px;
+  }
   *{box-sizing:border-box}
   html,body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system-ui}
-  a{color:var(--acc);text-decoration:none}
-  a:hover{text-decoration:underline}
+  a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
 
-  /* Glass nav */
-  .nav{position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:60;display:flex;gap:10px;padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:rgba(20,22,30,.45);backdrop-filter:blur(8px)}
+  /* Top nav */
+  .nav{position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:60;display:flex;gap:10px;
+       padding:8px 14px;border:1px solid var(--line);border-radius:999px;background:rgba(20,22,30,.45);backdrop-filter:blur(8px)}
   .nav a{color:#cfd6e6;font-size:13px;padding:6px 10px;border-radius:999px}
   .nav a:hover{background:rgba(255,255,255,.06)}
 
-  /* Sequence hero */
-  .seq{height:260svh;position:relative;border-bottom:1px solid var(--line)}
-  .pin{position:sticky;top:0;height:100svh;display:grid;place-items:center;background:#06070a}
-  canvas{width:100vw;height:100svh;display:block}
-  .loading{position:absolute;inset:auto 0 4vh;display:flex;justify-content:center;color:#98a2b3;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+  /* HERO (scroll-scrubbed video) */
+  .hero{height:200svh;position:relative;border-bottom:1px solid var(--line)}
+  .pin{position:sticky;top:0;height:100svh;overflow:hidden}
+  .hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.92) saturate(.98)}
+  .headline{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;text-align:center}
+  .headline h1{margin:0;font-size:clamp(40px,9vw,120px);letter-spacing:-.02em;line-height:.94;font-weight:900;text-shadow:0 6px 18px rgba(0,0,0,.45)}
+  .sub{margin-top:8px;color:#c9d3e6;font-weight:600;font-size:clamp(14px,2vw,18px);opacity:.9}
+  .loader{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);font-size:12px;color:#9aa3b2;letter-spacing:.12em;text-transform:uppercase}
 
   /* Sections */
-  section{min-height:100svh;display:flex;align-items:center;border-top:1px solid var(--line)}
-  .wrap{max-width:1140px;margin:0 auto;padding:0 24px}
-  h1{margin:0 0 10px;font-size:clamp(28px,4vw,56px);letter-spacing:-.02em}
-  h2{margin:0 0 18px;font-size:28px}
-  .muted{color:var(--muted)}
-  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
-  .card{grid-column:span 12;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;transition:transform .3s ease,border-color .3s ease}
+  section{padding:70px 0;border-top:1px solid var(--line)}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+  h2{margin:0 0 16px;font-size:clamp(22px,2.6vw,32px)}
+  p.muted{color:var(--muted);margin:6px 0 0}
+
+  /* Grids / cards */
+  .grid{display:grid;gap:16px}
+  @media(min-width:860px){ .grid.cols-2{grid-template-columns:repeat(2,1fr)} .grid.cols-3{grid-template-columns:repeat(3,1fr)} }
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;transition:transform .25s ease,border-color .25s ease}
   .card:hover{transform:translateY(-3px);border-color:rgba(159,216,255,.35)}
-  @media(min-width:860px){ .half{grid-column:span 6} .third{grid-column:span 4} }
   .pill{display:inline-block;padding:6px 10px;border:1px solid var(--line);border-radius:999px;margin:6px 8px 0 0;font-size:12px;color:#dfe6f5}
-  footer{padding:48px 0;text-align:center;color:#9aa3b2}
+
+  /* Footer */
+  footer{padding:48px 0;text-align:center;color:#9aa3b2;border-top:1px solid var(--line)}
 </style>
 </head>
 <body>
 
 <nav class="nav">
+  <a href="#intro">Intro</a>
   <a href="#work">Work</a>
   <a href="#skills">Skills</a>
   <a href="#experience">Experience</a>
@@ -48,36 +61,52 @@
   <a href="#contact">Contact</a>
 </nav>
 
-<!-- SEQUENCE HERO -->
-<div class="seq">
+<!-- HERO -->
+<div class="hero" id="intro">
   <div class="pin">
-    <canvas id="scene" aria-label="Scroll animation"></canvas>
-    <div id="loadmsg" class="loading">Loading…</div>
+    <video id="hero" preload="auto" playsinline muted>
+      <source src="media/hero.webm" type="video/webm" />
+      <source src="media/hero.mp4" type="video/mp4" />
+    </video>
+    <div class="headline">
+      <div>
+        <h1>Shashank Cheppala</h1>
+        <div class="sub">MS Data Analytics @ UIS — NLP · CV · ML Pipelines</div>
+      </div>
+    </div>
+    <div id="load" class="loader">Loading…</div>
   </div>
 </div>
 
-<!-- CONTENT -->
+<!-- SUMMARY / CTA -->
+<section>
+  <div class="wrap">
+    <h2>Summary</h2>
+    <p class="muted">Data analyst/engineer focused on practical NLP and computer vision. Strong with Python, Spark, TensorFlow/PyTorch, and end-to-end pipelines (ingestion → modeling → dashboards). GPA 3.8.</p>
+  </div>
+</section>
+
+<!-- WORK -->
 <section id="work">
   <div class="wrap">
-    <h1>Shashank Cheppala</h1>
-    <p class="muted">MS Data Analytics @ UIS — building practical NLP/CV systems and ML pipelines.</p>
-    <div class="grid" style="margin-top:14px">
-      <div class="card half">
+    <h2>Selected Work</h2>
+    <div class="grid cols-2">
+      <div class="card">
         <strong>Fake News Detection — LLM & Deep Learning</strong>
         <p class="muted">Predicts co-evolution iteration using linguistic features, LogReg/RF, GloVe-BiLSTM, DistilBERT, and back-translation augmentation.</p>
         <div><span class="pill">Python</span><span class="pill">TensorFlow</span><span class="pill">Hugging Face</span></div>
       </div>
-      <div class="card half">
+      <div class="card">
         <strong>Emotion-Aware Hybrid Deepfake Detection</strong>
         <p class="muted">Two-stream EfficientNetB0 + temporal Conv1D fused with per-frame emotion vectors (FER+MTCNN). VideoMAE baselines. Custom focal loss.</p>
         <div><span class="pill">TensorFlow</span><span class="pill">PyTorch</span><span class="pill">OpenCV</span></div>
       </div>
-      <div class="card half">
+      <div class="card">
         <strong>Realtime Risk Scoring (Stream)</strong>
         <p class="muted">Kafka ingestion, Spark feature store, streaming inference with dashboard KPIs.</p>
         <div><span class="pill">Spark</span><span class="pill">Kafka</span><span class="pill">MLOps</span></div>
       </div>
-      <div class="card half">
+      <div class="card">
         <strong>Tech-News Evolution Mining</strong>
         <p class="muted">Trend mining, sentiment/complexity evolution, LR/RF/LSTM/DistilBERT classifiers, and co-evolution visualization.</p>
         <div><span class="pill">NLP</span><span class="pill">Visualization</span></div>
@@ -86,42 +115,46 @@
   </div>
 </section>
 
+<!-- SKILLS -->
 <section id="skills">
   <div class="wrap">
     <h2>Skills</h2>
-    <div class="grid">
-      <div class="card third"><strong>Programming</strong><p class="muted">Python, SQL, R</p></div>
-      <div class="card third"><strong>Big Data</strong><p class="muted">Spark (PySpark, Spark SQL), Hadoop, Kafka</p></div>
-      <div class="card third"><strong>ML</strong><p class="muted">scikit-learn, TensorFlow, Keras, Hugging Face, DistilBERT, GloVe</p></div>
-      <div class="card third"><strong>Viz & Tools</strong><p class="muted">pandas, NumPy, matplotlib, seaborn, GeoPandas, Tableau, Power BI, Excel</p></div>
-      <div class="card third"><strong>Platforms</strong><p class="muted">Colab, Jupyter, Streamlit, Docker, Git/GitHub, PyCharm</p></div>
-      <div class="card third"><strong>Soft</strong><p class="muted">Leadership, Communication, Public Speaking, Time Mgmt, Tech Writing</p></div>
+    <div class="grid cols-3">
+      <div class="card"><strong>Programming</strong><p class="muted">Python, SQL, R</p></div>
+      <div class="card"><strong>Big Data</strong><p class="muted">Spark (PySpark, Spark SQL), Hadoop, Kafka</p></div>
+      <div class="card"><strong>ML</strong><p class="muted">scikit-learn, TensorFlow, Keras, Hugging Face, DistilBERT, GloVe</p></div>
+      <div class="card"><strong>Viz & Tools</strong><p class="muted">pandas, NumPy, matplotlib, seaborn, GeoPandas, Tableau, Power BI, Excel</p></div>
+      <div class="card"><strong>Platforms</strong><p class="muted">Colab, Jupyter, Streamlit, Docker, Git/GitHub, PyCharm</p></div>
+      <div class="card"><strong>Soft</strong><p class="muted">Leadership, Communication, Public Speaking, Time Mgmt, Tech Writing</p></div>
     </div>
   </div>
 </section>
 
+<!-- EXPERIENCE -->
 <section id="experience">
   <div class="wrap">
     <h2>Experience</h2>
-    <div class="grid">
-      <div class="card half">
-        <strong>Survey Data Analyst — BallotNow (Sep 2023 – Dec 2023)</strong>
-        <ul class="muted">
+    <div class="grid cols-2">
+      <div class="card">
+        <strong>Survey Data Analyst — BallotNow</strong>
+        <p class="muted">Sep 2023 – Dec 2023 · Hyderabad, IN</p>
+        <ul class="muted" style="margin:8px 0 0 16px">
           <li>Coordinated survey schedules during election cycles; improved digital workflows.</li>
-          <li>Analyzed data for election officials and produced concise report summaries.</li>
+          <li>Analyzed data for election officials; produced concise report summaries.</li>
           <li>Led outreach to increase participation.</li>
         </ul>
       </div>
-      <div class="card half">
-        <strong>Data Analyst Intern — Greenfoods Pvt. Ltd. (Apr 2023 – Sep 2023)</strong>
-        <ul class="muted">
+      <div class="card">
+        <strong>Data Analyst Intern — Greenfoods Pvt. Ltd.</strong>
+        <p class="muted">Apr 2023 – Sep 2023 · Hyderabad, IN</p>
+        <ul class="muted" style="margin:8px 0 0 16px">
           <li>Optimized data mining/collection pipelines and automated recurring analysis.</li>
           <li>Performed EDA, validation/cleanup, and client-ready reporting.</li>
         </ul>
       </div>
       <div class="card">
         <strong>Education</strong>
-        <ul class="muted">
+        <ul class="muted" style="margin:8px 0 0 16px">
           <li>University of Illinois Springfield — MS Data Analytics (GPA 3.8)</li>
           <li>TKR Engineering College — B.Tech CSE (GPA 3.3)</li>
         </ul>
@@ -130,16 +163,17 @@
   </div>
 </section>
 
+<!-- PUBLICATIONS -->
 <section id="publications">
   <div class="wrap">
     <h2>Publications</h2>
-    <div class="grid">
-      <div class="card half">
+    <div class="grid cols-2">
+      <div class="card">
         <strong>A Comprehensive Approach to Sentiment-Based Dynamic Pricing</strong>
         <p class="muted">Real-time pricing from review/news sentiment with fairness emphasis.</p>
         <a href="https://ijrpr.com/uploads/V5ISSUE11/IJRPR35607.pdf" target="_blank" rel="noopener">Paper</a>
       </div>
-      <div class="card half">
+      <div class="card">
         <strong>Behavior-Based Incentivization and Predictive Analytics</strong>
         <p class="muted">Synthetic datasets, LR/RF models, and incentive effectiveness analysis.</p>
         <a href="https://ijrpr.com/uploads/V5ISSUE11/IJRPR34678.pdf" target="_blank" rel="noopener">Paper</a>
@@ -148,6 +182,7 @@
   </div>
 </section>
 
+<!-- CONTACT -->
 <section id="contact">
   <div class="wrap">
     <h2>Contact</h2>
@@ -169,127 +204,50 @@
 document.getElementById('y').textContent = new Date().getFullYear();
 gsap.registerPlugin(ScrollTrigger);
 
-/* ===== Smooth scroll (stabilizes ScrollTrigger updates) ===== */
+/* Smooth scroll (stabilizes ScrollTrigger updates) */
 const lenis = new Lenis({ lerp: 0.12, wheelMultiplier: 1.0, smoothWheel: true });
-function raf(time){ lenis.raf(time); requestAnimationFrame(raf) } requestAnimationFrame(raf);
+function raf(t){ lenis.raf(t); requestAnimationFrame(raf) } requestAnimationFrame(raf);
 
-/* ===== Sequence player (fast) ===== */
-const FRAME_COUNT = 241;
-const PATH = i => `media/sequence/frame_${String(i).padStart(4,'0')}.webp`;
-const DPR = Math.min(window.devicePixelRatio || 1, 1.2); // clamp to cut overdraw
-const LOOP_MODE = "loop"; // or "pingpong"
+/* Scroll-scrubbed Video */
+const vid = document.getElementById('hero');
+const loader = document.getElementById('load');
 
-const canvas = document.getElementById('scene');
-const ctx = canvas.getContext('2d', { alpha:false, desynchronized:true });
-let naturalW = 1280, naturalH = 720;
+// Fallback: show loader until first frame available
+vid.addEventListener('loadeddata', () => { loader.style.display='none'; vid.pause(); vid.currentTime = 0; });
 
-function resize(){
-  const w = Math.floor(innerWidth * DPR);
-  const h = Math.floor(innerHeight * DPR);
-  canvas.width = w; canvas.height = h;
-}
-addEventListener('resize', resize);
-
-/* Cache & loader */
-const loaded = new Array(FRAME_COUNT+1).fill(false);
-const inflight = new Set();
-const cache = new Map();                 // LRU of ImageBitmaps
-const MAX_CACHE = 40;                    // bigger cache = fewer re-decodes
-
-function keep(key, bmp){
-  cache.set(key, bmp);
-  if (cache.size > MAX_CACHE) cache.delete(cache.keys().next().value);
-}
-
-async function load(index){
-  if (index<1 || index>FRAME_COUNT || loaded[index] || inflight.has(index)) return;
-  inflight.add(index);
-  try {
-    const resp = await fetch(PATH(index), { cache:"force-cache", priority: "high" });
-    if (!resp.ok) throw new Error("404");
-    const blob = await resp.blob();
-    const bmp  = await createImageBitmap(blob);
-    if (index === 1){ naturalW = bmp.width; naturalH = bmp.height; document.getElementById('loadmsg').style.display='none'; }
-    loaded[index] = true; keep(index, bmp);
-  } catch(e){ if (index===1) document.getElementById('loadmsg').textContent='Frame missing'; }
-  finally { inflight.delete(index); }
-}
-
-/* Prefetch neighborhood both directions */
-function warm(center, radiusA=12, radiusB=12){
-  for (let r=0; r<=Math.max(radiusA, radiusB); r++){
-    const i1 = ((center-1 + r) % FRAME_COUNT) + 1;
-    const i2 = ((center-1 - r + FRAME_COUNT) % FRAME_COUNT) + 1;
-    if (r<=radiusA) load(i1);
-    if (r<=radiusB) load(i2);
-  }
-}
-
-/* Progress → index */
-function idxFromProgress(p){
-  if (LOOP_MODE==="pingpong"){
-    const t = p*2; const u = t<=1? t : 2-t; // 0..1..0
-    return Math.round(u*(FRAME_COUNT-1))+1;
-  } else {
-    const u = p % 1;
-    return Math.round(u*(FRAME_COUNT-1))+1;
-  }
-}
-
-/* Target index from ScrollTrigger, decoupled from render */
-let targetIndex = 1, lastProgress = 0;
-const st = ScrollTrigger.create({
-  trigger: '.seq',
-  start: 'top top',
-  end: '+=260%',
-  scrub: 0.1,
-  pin: '.pin',
-  anticipatePin: 1,
-  onUpdate: self => {
-    const p = self.progress;
-    targetIndex = idxFromProgress(p);
-    // Prefetch both ahead/behind. If direction flipped, pull from the other side more.
-    const dir = Math.sign(p - lastProgress) || 1;
-    if (dir > 0) warm(targetIndex, 14, 8); else warm(targetIndex, 8, 14);
-    lastProgress = p;
-  }
+let duration = 0;
+vid.addEventListener('loadedmetadata', () => {
+  duration = vid.duration || 4; // your clip is ~4s
+  gsap.to({}, {
+    scrollTrigger: {
+      trigger: '.hero',
+      start: 'top top',
+      end: 'bottom top',
+      scrub: 0.15,
+      pin: '.pin',
+      anticipatePin: 1,
+      onUpdate: self => {
+        // Map scroll progress [0..1] to the video timeline
+        const t = duration * self.progress;
+        if (Math.abs((vid.currentTime||0) - t) > 0.01) vid.currentTime = t;
+      }
+    }
+  });
 });
 
-/* RAF renderer with adaptive easing (reduces jitter when scrubbing) */
-let currentIndex = 1;
-function render(){
-  // adaptive easing: faster when far, slower when near; also damp around direction flips
-  const delta = targetIndex - currentIndex;
-  const wrapDelta = ((delta + FRAME_COUNT/2) % FRAME_COUNT) - FRAME_COUNT/2; // handle loops smoothly
-  const dist = Math.abs(wrapDelta);
-  const k = dist > 20 ? 0.35 : dist > 8 ? 0.28 : 0.2;  // gain
-  currentIndex = currentIndex + wrapDelta * k;
-
-  // keep inside [1, FRAME_COUNT] with wrap
-  if (currentIndex < 1) currentIndex += FRAME_COUNT;
-  if (currentIndex > FRAME_COUNT) currentIndex -= FRAME_COUNT;
-
-  const drawIndex = Math.round(currentIndex);
-  const bmp = cache.get(drawIndex);
-  if (bmp){
-    const scale = Math.max(canvas.width/naturalW, canvas.height/naturalH);
-    const dw = naturalW*scale, dh = naturalH*scale;
-    const dx = (canvas.width-dw)/2, dy=(canvas.height-dh)/2;
-    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
-    ctx.drawImage(bmp, dx, dy, dw, dh);
-  } else {
-    warm(drawIndex, 10, 10);
-  }
-  requestAnimationFrame(render);
+// Mobile: if performance is poor, just play once on first scroll
+if (/Mobi|Android/i.test(navigator.userAgent)) {
+  let started = false;
+  const startPlay = () => {
+    if (!started && vid.readyState >= 2) { vid.play().catch(()=>{}); started = true; }
+  };
+  window.addEventListener('scroll', startPlay, { once:true, passive:true });
+  window.addEventListener('touchstart', startPlay, { once:true, passive:true });
 }
 
-/* Init */
-resize();
-load(1).then(()=>{ warm(1, 24, 24); requestAnimationFrame(render); });
-
-/* Reduced motion */
+// Reduced motion users: don't scrub
 if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-  ScrollTrigger.getAll().forEach(s=>s.disable());
+  vid.removeAttribute('preload');
 }
 </script>
 </body>
