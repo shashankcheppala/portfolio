@@ -1,29 +1,22 @@
 // src/components/Medium.js
 import React, { useEffect, useState } from "react";
-import Lottie from "lottie-react";
-import writingAnim from "../lottie/first.json"; // reuse existing animation
 
 const RSS2JSON = "https://api.rss2json.com/v1/api.json?rss_url=";
-const MEDIUM_USER = "shashankcheppala";
+const CACHE_KEY = "medium_posts_cache_v2";
+const TTL_MS = 30 * 60 * 1000; // 30 minutes
+
+const MEDIUM_USER = "shashankcheppala"; // no @
 const FEED_URL = `https://medium.com/feed/@${MEDIUM_USER}`;
 const PROFILE_URL = `https://medium.com/@${MEDIUM_USER}`;
 
-const CACHE_KEY = "medium_posts_cache_v2";
-const TTL_MS = 30 * 60 * 1000; // 30 min
-
+// simple placeholder (optional: swap to /public/medium-placeholder.jpg)
 const PLACEHOLDER =
   "data:image/svg+xml;charset=UTF-8," +
   encodeURIComponent(
-    `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='450'>
-      <defs>
-        <linearGradient id='g' x1='0' x2='1'>
-          <stop stop-color='#0b0f24' offset='0'/>
-          <stop stop-color='#121a39' offset='1'/>
-        </linearGradient>
-      </defs>
-      <rect width='100%' height='100%' fill='url(#g)'/>
+    `<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630'>
+      <rect width='100%' height='100%' fill='#0b0f24'/>
       <text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle'
-            fill='#b7c0d8' font-family='Arial' font-size='22'>
+            fill='#b7c0d8' font-family='Arial' font-size='28'>
         Medium article
       </text>
     </svg>`
@@ -34,10 +27,10 @@ const extractFirstImg = (html = "") => {
   return m ? m[1] : null;
 };
 
-const getThumb = (item) =>
-  item.thumbnail ||
-  extractFirstImg(item.content) ||
-  extractFirstImg(item.description) ||
+const getThumb = (post) =>
+  post.thumbnail ||
+  extractFirstImg(post.content) ||
+  extractFirstImg(post.description) ||
   PLACEHOLDER;
 
 export default function Medium() {
@@ -88,7 +81,7 @@ export default function Medium() {
           setState({ loading: false, error: "" });
           writeCache(items);
         }
-      } catch (e) {
+      } catch {
         if (!cached && mounted) {
           setState({
             loading: false,
@@ -104,103 +97,113 @@ export default function Medium() {
     };
   }, []);
 
-  // shared card
-  const PostCard = ({ item }) => (
-    <a
-      href={`${item.link}?utm_source=portfolio&utm_medium=medium_grid`}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="group relative flex h-full w-full overflow-hidden rounded-2xl border border-[#2a2f45] hover:border-violet-500 transition-all bg-[#0f142b]/60 dark:bg-[#0b0f24]/60"
-    >
-      <div className="absolute inset-0">
-        <img
-          src={getThumb(item)}
-          alt={item.title}
-          className="h-full w-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-500"
-          loading="lazy"
-          referrerPolicy="no-referrer"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
-      </div>
-
-      <div className="relative z-10 mt-auto p-4 md:p-5 text-white">
-        <h3 className="text-lg md:text-xl font-extrabold leading-tight drop-shadow-md">
-          {item.title}
-        </h3>
-        <p className="mt-1 text-xs md:text-sm text-slate-300">
-          {new Date(item.pubDate).toLocaleDateString()}
-        </p>
-        <p
-          className="mt-2 hidden sm:block text-sm text-slate-200/90 line-clamp-2"
-          dangerouslySetInnerHTML={{
-            __html:
-              (item.description || "")
-                .replace(/<[^>]+>/g, "")
-                .slice(0, 140) + "…",
-          }}
-        />
-      </div>
-    </a>
-  );
-
   return (
     <section
       id="medium"
-      className="relative w-full min-h-screen h-screen px-3 md:px-6 py-4 md:py-6"
+      className="
+        min-h-screen
+        flex flex-col justify-center
+        px-5 md:px-10
+        scroll-mt-24
+      "
     >
-      {/* 2×2 grid that fills one page */}
-      <div className="grid grid-cols-2 grid-rows-2 gap-3 md:gap-5 w-full h-full">
-        {/* Top-left: animation + heading */}
-        <div className="relative rounded-2xl border border-[#2a2f45] overflow-hidden bg-gradient-to-b from-[#101732] to-[#0b0f24]">
-          <div className="absolute top-3 left-4 right-4 z-10">
-            <h2 className="text-3xl md:text-5xl font-extrabold text-slate-100">
-              My Medium Articles
-            </h2>
-          </div>
-          <div className="w-full h-full flex items-center justify-center">
-            <Lottie
-              animationData={writingAnim}
-              loop
-              className="w-[80%] md:w-[70%] h-auto"
-            />
-          </div>
+      {/* Title */}
+      <h2 className="text-4xl md:text-5xl font-extrabold text-[#00040f] dark:text-slate-200 mb-10 text-center">
+        My Medium Articles
+      </h2>
 
-          {/* profile cta bottom-right */}
+      {/* Grid */}
+      <div className="w-full max-w-screen-xl mx-auto">
+        <div className="grid gap-6 sm:gap-8 grid-cols-1 md:grid-cols-3">
+          {state.loading &&
+            Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={i}
+                className="rounded-2xl border border-[#353a52]/50 dark:border-white/10 p-5 bg-white/60 dark:bg-white/5 backdrop-blur-sm animate-pulse"
+              >
+                <div className="w-full h-48 md:h-56 bg-[#1b2242]/30 rounded-lg mb-4" />
+                <div className="h-4 w-3/4 bg-[#1b2242]/30 rounded mb-2" />
+                <div className="h-3 w-1/2 bg-[#1b2242]/30 rounded" />
+              </div>
+            ))}
+
+          {!state.loading && state.error && (
+            <div className="md:col-span-3 text-center text-sm text-red-400">
+              {state.error}
+            </div>
+          )}
+
+          {!state.loading &&
+            !state.error &&
+            posts.map((post) => {
+              const thumb = getThumb(post);
+              return (
+                <article
+                  key={post.guid}
+                  className="
+                    group rounded-2xl overflow-hidden
+                    border border-[#353a52]/50 dark:border-white/10
+                    bg-white/70 dark:bg-white/5 backdrop-blur
+                    hover:border-violet-500/70 transition-all duration-300
+                    flex flex-col
+                  "
+                >
+                  <div className="relative">
+                    <img
+                      src={thumb}
+                      alt={post.title}
+                      className="w-full h-48 md:h-56 object-cover"
+                      loading="lazy"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
+
+                  <div className="p-5 flex-1 flex flex-col">
+                    <h3 className="font-extrabold text-lg md:text-xl text-[#0d1224] dark:text-slate-100 mb-2 leading-snug">
+                      {post.title}
+                    </h3>
+
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
+                      {new Date(post.pubDate).toLocaleDateString()}
+                    </p>
+
+                    <p
+                      className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3"
+                      dangerouslySetInnerHTML={{
+                        __html:
+                          post.description.replace(/<[^>]+>/g, "").slice(0, 160) +
+                          "…",
+                      }}
+                    />
+
+                    <div className="mt-5">
+                      <a
+                        href={`${post.link}?utm_source=portfolio&utm_medium=medium_section`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center w-full py-2.5 rounded-lg
+                                   bg-gradient-to-r from-pink-500 to-pink-600 text-white
+                                   font-medium hover:scale-[1.02] active:scale-[0.99] transition-transform"
+                      >
+                        Open Article
+                      </a>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+        </div>
+
+        {/* Footer CTA */}
+        <div className="flex justify-center mt-8">
           <a
-            href={`${PROFILE_URL}?utm_source=portfolio&utm_medium=grid_cta`}
+            href={`${PROFILE_URL}?utm_source=portfolio&utm_medium=section_cta`}
             target="_blank"
             rel="noopener noreferrer"
-            className="absolute bottom-4 right-4 z-10 rounded-md bg-gradient-to-r from-pink-500 to-fuchsia-600 text-white text-xs md:text-sm px-3 py-2 hover:scale-105 transition"
+            className="inline-block bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2.5 px-5 rounded-lg hover:scale-105 transition-transform"
           >
-            Read more →
+            Read more on Medium →
           </a>
-        </div>
-
-        {/* Top-right: post 1 */}
-        <div className="rounded-2xl overflow-hidden">
-          {state.loading || state.error || posts.length < 1 ? (
-            <div className="h-full w-full rounded-2xl border border-[#2a2f45] bg-[#0b0f24] animate-pulse" />
-          ) : (
-            <PostCard item={posts[0]} />
-          )}
-        </div>
-
-        {/* Bottom-left: post 2 */}
-        <div className="rounded-2xl overflow-hidden">
-          {state.loading || state.error || posts.length < 2 ? (
-            <div className="h-full w-full rounded-2xl border border-[#2a2f45] bg-[#0b0f24] animate-pulse" />
-          ) : (
-            <PostCard item={posts[1]} />
-          )}
-        </div>
-
-        {/* Bottom-right: post 3 */}
-        <div className="rounded-2xl overflow-hidden">
-          {state.loading || state.error || posts.length < 3 ? (
-            <div className="h-full w-full rounded-2xl border border-[#2a2f45] bg-[#0b0f24] animate-pulse" />
-          ) : (
-            <PostCard item={posts[2]} />
-          )}
         </div>
       </div>
     </section>
