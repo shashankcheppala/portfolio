@@ -26,7 +26,7 @@ export const projects = [
   {
     id: "2",
     title: "Emotion-Aware Deepfake Video Detection",
-    date: "2023",
+    date: "2025",
     description:
       "Designed a two-stream hybrid model to detect manipulated video content using the CelebDF-V2 dataset. Combined spatial–temporal visual features from EfficientNetB0 + Conv1D with emotion vectors extracted via MTCNN and FER. Benchmarked against baselines (Logistic Regression, custom CNN, Bi-LSTM on emotion sequences, VideoMAE), all scoring near AUC ≈ 0.60. The hybrid approach achieved validation AUC ≈ 0.85 and macro-F1 ≈ 0.70, outperforming single-modality models. Built a full preprocessing pipeline for frame extraction, emotion feature caching, balanced sampling, and augmentation to ensure reproducible training.",
     images: [deepfake1, deepfake2],
@@ -58,7 +58,7 @@ export const projects = [
   {
     id: "4",
     title: "Behavior-Based Incentivization with Machine Learning",
-    date: "2024",
+    date: "2023",
     description:
       "Explored how behavioral traits such as prosocial actions, sustainable practices, academic achievements, community engagement, and positive communication can predict positive outcomes. Generated a synthetic dataset and applied descriptive analytics to study gender-based behavioral patterns. Trained multiple ML models (SVM, Random Forest, Naive Bayes, KNN, Decision Tree) to forecast outcomes, with Random Forest achieving the strongest balance across accuracy, precision, recall, and F1-score. Feature importance analysis highlighted Positive Communication and Prosocial Behavior as the strongest predictors, offering insights for designing incentive programs in education and organizations.",
     images: [incentive1, incentive2],
