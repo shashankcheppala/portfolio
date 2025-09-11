@@ -3,339 +3,184 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Shashank Cheppala · Portfolio</title>
-  <meta name="description" content="Portfolio of Shashank Cheppala — MS Data Analytics student. Projects in NLP, deepfake detection, data visualization, and more." />
-  <meta property="og:title" content="Shashank Cheppala · Portfolio" />
-  <meta property="og:description" content="Projects in NLP, deepfake detection, and analytics." />
-  <meta property="og:type" content="website" />
+  <title>Shashank · Apple-style 3D Scroll</title>
+  <meta name="description" content="All-black Apple-style portfolio with smooth scroll and 3D model pinning." />
   <meta name="theme-color" content="#000000" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='28' fill='%23fff'/%3E%3Ctext x='32' y='39' font-size='26' text-anchor='middle' font-family='Arial' fill='%23000'%3ESC%3C/text%3E%3C/svg%3E" />
   <style>
-    :root{
-      --bg:#000; --card:#0a0a0a; --muted:#9aa0a6; --text:#f0f0f0; --line:#141414; --soft:#0f0f0f;
-    }
-    html,body{height:100%}
+    :root{ --bg:#000; --text:#f2f2f2; --muted:#a0a0a0; --line:#121212; }
     *{box-sizing:border-box}
-    body{margin:0; background:var(--bg); color:var(--text); font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; line-height:1.6;-webkit-font-smoothing:antialiased}
+    html,body{height:100%}
+    html{scroll-behavior:auto}
+    body{margin:0; background:#000; color:var(--text); font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;}
     a{color:#fff; text-decoration:none}
-    a:hover{opacity:.9}
-    .container{width:100%; max-width:1200px; margin-inline:auto; padding: clamp(16px, 4vw, 28px)}
 
-    /* ====== Global UI ====== */
-    .btn{display:inline-flex; align-items:center; gap:10px; padding:10px 14px; border-radius:12px; border:1px solid var(--line); background:var(--soft); color:#fff; transition:transform .15s ease, box-shadow .2s}
-    .btn:hover{transform:translateY(-1px)}
-    .btn.ghost{background:transparent}
-    .tag{border:1px solid var(--line); padding:6px 10px; border-radius:999px; font-size:12px; color:#d6d6d6; background:#0a0a0a}
-    .muted{color:var(--muted)}
-    :focus-visible{outline:2px solid #2a2a2a; outline-offset:3px; border-radius:8px}
-    html{scroll-behavior:smooth}
+    /* Nav */
+    .nav{position:fixed; top:0; left:0; right:0; height:56px; display:flex; align-items:center; justify-content:space-between; padding:0 16px; border-bottom:1px solid var(--line); background:rgba(0,0,0,.6); backdrop-filter: blur(8px); z-index:100}
+    .brand{display:flex; align-items:center; gap:10px}
+    .dot{width:10px; height:10px; border-radius:50%; background:#fff; box-shadow:0 0 18px #fff6}
+    .links{display:flex; gap:16px}
+    .links a{color:#cfcfcf}
 
-    /* ====== Layout: Sidebar + Content ====== */
-    .wrap{display:grid; grid-template-columns: 320px 1fr; gap:24px}
-    @media (max-width: 980px){ .wrap{grid-template-columns: 1fr} }
+    .section{min-height:100svh; display:flex; align-items:center; padding:80px 6vw; border-bottom:1px solid var(--line)}
+    .container{width:100%; max-width:1200px; margin:0 auto}
+    .h1{font-size:clamp(28px,4vw,56px); line-height:1.1; margin:0 0 10px}
+    .p{color:var(--muted); max-width:70ch}
 
-    aside{position:sticky; top:0; height:100dvh; padding:24px; border-right:1px solid var(--line); display:flex; flex-direction:column; gap:22px; background:linear-gradient(180deg, #030303, #000)}
-    @media (max-width:980px){ aside{position:static; height:auto; border-right:0; border-bottom:1px solid var(--line)} }
+    /* Pinned 3D stage */
+    .stage-wrap{position:relative; height:200svh}
+    .stage{position:sticky; top:56px; height:calc(100svh - 56px); border-bottom:1px solid var(--line)}
+    #stage-canvas{position:absolute; inset:0; width:100%; height:100%; display:block}
+    .stage-overlay{position:absolute; inset:0; display:grid; place-items:end start; padding:24px; pointer-events:none}
+    .stage-overlay .copy{max-width:760px}
+    .tag{display:inline-block; border:1px solid var(--line); padding:6px 10px; border-radius:999px; font-size:12px; color:#eaeaea; margin-right:8px}
 
-    .brand{display:flex; align-items:center; gap:14px}
-    .dot{width:12px; height:12px; border-radius:50%; background:#fff; box-shadow:0 0 18px #fff6}
-    .brand h1{font-size:20px; margin:0; letter-spacing:.6px; font-weight:700}
-    .subtitle{margin:0; color:var(--muted)}
+    /* Feature rows */
+    .grid{display:grid; grid-template-columns:repeat(12,1fr); gap:20px}
+    .col-6{grid-column:span 6}
+    .card{background:#0a0a0a; border:1px solid var(--line); border-radius:18px; padding:18px}
+    @media (max-width:900px){ .col-6{grid-column:span 12} }
 
-    .quick{display:flex; flex-wrap:wrap; gap:10px}
-    nav a{display:block; padding:10px 12px; border:1px solid var(--line); border-radius:12px; color:#eaeaea; background:#0b0b0b}
-    nav a:hover{background:#111}
+    footer{padding:28px; color:#9a9a9a; text-align:center}
 
-    .metrics{display:grid; grid-template-columns:repeat(3,1fr); gap:12px}
-    .metric{background:var(--soft); border:1px solid var(--line); border-radius:14px; padding:12px}
-    .metric b{display:block; font-size:18px}
-    .metric span{font-size:12px; color:var(--muted)}
-
-    main{padding:0}
-    section{padding-block: clamp(28px, 5vw, 56px); border-bottom:1px solid var(--line)}
-    .section-title{font-size:12px; letter-spacing:.18em; color:#cfcfcf; text-transform:uppercase; margin-bottom:14px; padding-inline:24px}
-
-    /* ====== Cards/Grid ====== */
-    .content-pad{padding:24px}
-    .grid{display:grid; grid-template-columns: repeat(12, 1fr); gap: clamp(12px, 2.5vw, 20px)}
-    .col-12{grid-column: span 12}
-    .col-8{grid-column: span 8}
-    .col-6{grid-column: span 6}
-    .col-4{grid-column: span 4}
-    @media (max-width: 980px){ .col-8,.col-6,.col-4{grid-column: span 12} }
-
-    .card{background:var(--card); border:1px solid var(--line); border-radius:16px; padding:18px}
-    .card h3{margin:0 0 8px; font-size:18px}
-    .meta{color:var(--muted); font-size:13px}
-    ul.clean{list-style:none; padding:0; margin:12px 0 0}
-    ul.clean li{padding:10px 12px; border:1px solid var(--line); background:#0b0b0b; border-radius:12px; margin:0 0 10px}
-
-    /* ====== 3D Hero ====== */
-    .hero3d{position:relative; height:min(72vh, 820px); border-bottom:1px solid var(--line); overflow:hidden}
-    .hero3d canvas{position:absolute; inset:0; width:100%; height:100%; display:block}
-    .hero-overlay{position:relative; z-index:2; padding: clamp(18px, 4vw, 32px); display:flex; height:100%; align-items:end; background:linear-gradient(180deg, #00000000 0%, #000000b3 70%, #000 100%)}
-    .hero-copy{max-width:960px}
-    .hero-copy h2{font-size: clamp(28px, 4vw, 48px); line-height:1.15; margin:0 0 10px}
-    .hero-copy p{color:var(--muted); margin:0 0 14px}
-
-    /* ====== Footer ====== */
-    footer{padding:28px; color:var(--muted); text-align:center}
-
-    @media (prefers-reduced-motion: no-preference){
-      .btn:hover{box-shadow:0 6px 22px #ffffff0f}
-      .card{transition: transform .2s ease, background .2s ease}
-      .card:hover{transform: translateY(-2px); background:#0c0c0c}
+    @media (prefers-reduced-motion:no-preference){
+      .card{transition:transform .2s ease, background .2s ease}
+      .card:hover{transform:translateY(-2px); background:#0c0c0c}
     }
   </style>
 </head>
 <body>
-  <a href="#content" class="visually-hidden">Skip to content</a>
-  <div class="container">
-    <div class="wrap">
-      <aside>
-        <div class="brand" aria-label="Brand">
-          <div class="dot" aria-hidden="true"></div>
-          <div>
-            <h1>Shashank Cheppala</h1>
-            <p class="subtitle">MS Data Analytics · UIS</p>
-          </div>
-        </div>
-        <div class="quick" aria-label="Quick actions">
-          <a class="btn" href="#projects">View Projects</a>
-          <a class="btn ghost" href="mailto:notedevelopment@gmail.com">Email</a>
-          <a class="btn" href="Resume.pdf" target="_blank" rel="noopener">View Resume</a>
-          <a class="btn ghost" href="Resume.pdf" download>Download PDF</a>
-        </div>
-        <nav aria-label="Sections">
-          <div class="quick">
-            <a href="#about">About</a>
-            <a href="#skills">Skills</a>
-            <a href="#projects">Projects</a>
-            <a href="#publications">Publications</a>
-            <a href="#awards">Awards</a>
-            <a href="#volunteering">Volunteering</a>
-            <a href="#contact">Contact</a>
-          </div>
-        </nav>
-        <div class="metrics" aria-label="At a glance">
-          <div class="metric"><b>2</b><span>Publications</span></div>
-          <div class="metric"><b>5+</b><span>Major Projects</span></div>
-          <div class="metric"><b>Tools</b><span>PyTorch · TF · HF</span></div>
-        </div>
-        <p class="muted">Focused on NLP, computer vision, and end‑to‑end ML systems. I build clean, reliable pipelines and practical model interfaces.</p>
-      </aside>
+  <header class="nav">
+    <div class="brand"><div class="dot"></div><strong>Shashank</strong></div>
+    <nav class="links">
+      <a href="#intro">Intro</a>
+      <a href="#stage">3D</a>
+      <a href="#work">Work</a>
+      <a href="Resume.pdf" target="_blank" rel="noopener">Resume</a>
+    </nav>
+  </header>
 
-      <main id="content">
-        <!-- ====== 3D HERO ====== -->
-        <section class="hero3d" id="hero3d" aria-label="Animated background">
-          <canvas id="scene"></canvas>
-          <div class="hero-overlay">
-            <div class="hero-copy">
-              <h2>Building explainable, useful ML — and the systems around it.</h2>
-              <p>Data analytics with a product mindset. NLP, computer vision, and clean E2E pipelines.</p>
-              <div class="quick">
-                <a class="btn" href="#projects">See Projects</a>
-                <a class="btn ghost" href="mailto:notedevelopment@gmail.com">Contact</a>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="about">
-          <p class="section-title">About</p>
-          <div class="content-pad">
-            <div class="grid">
-              <div class="card col-8">
-                <h3>Data Analytics with a Product Mindset</h3>
-                <p class="meta">I enjoy shipping explainable, user‑friendly ML features—pairing robust preprocessing with clear, human‑readable outputs.</p>
-                <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px">
-                  <span class="tag">Python</span><span class="tag">SQL</span><span class="tag">PyTorch</span><span class="tag">TensorFlow</span><span class="tag">Hugging Face</span><span class="tag">Tableau</span>
-                </div>
-              </div>
-              <div class="card col-4">
-                <h3>Education</h3>
-                <div class="timeline">
-                  <div class="tl-item"><strong>MS, Data Analytics</strong><div class="meta">University of Illinois Springfield</div></div>
-                  <div class="tl-item"><strong>BTech, Computer Science</strong><div class="meta">TKR College of Engineering & Technology</div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section id="skills">
-          <p class="section-title">Skills</p>
-          <div class="content-pad">
-            <div class="grid">
-              <div class="card col-6"><h3>Programming & Data</h3><p class="meta">Python, SQL, R · pandas, NumPy, matplotlib, GeoPandas</p></div>
-              <div class="card col-6"><h3>ML & NLP</h3><p class="meta">scikit‑learn, TensorFlow/Keras, PyTorch, GloVe, DistilBERT, Transformers</p></div>
-              <div class="card col-6"><h3>Big Data</h3><p class="meta">Spark (PySpark, Spark SQL), Hadoop, Kafka</p></div>
-              <div class="card col-6"><h3>Visualization & BI</h3><p class="meta">Tableau, Power BI, Excel</p></div>
-              <div class="card col-6"><h3>Platforms & Tools</h3><p class="meta">Google Colab, Jupyter, Streamlit, Docker, Git/GitHub, PyCharm</p></div>
-              <div class="card col-6"><h3>Soft Skills</h3><p class="meta">Leadership, Communication, Public Speaking, Time Management, Technical Writing</p></div>
-            </div>
-          </div>
-        </section>
-
-        <section id="projects">
-          <p class="section-title">Projects</p>
-          <div class="content-pad">
-            <div class="grid">
-              <article class="card col-6">
-                <h3>Fake News Detection Using LLMs & Deep Learning</h3>
-                <p class="meta">End‑to‑end NLP pipeline across evolution stages, handcrafted features, classical ML, Bi‑LSTM (GloVe), and DistilBERT fine‑tuning with augmentation.</p>
-                <ul class="clean">
-                  <li>Feature engineering: readability, sentiment, lexical diversity</li>
-                  <li>Models: Logistic Regression, Random Forest, Bi‑LSTM, DistilBERT</li>
-                  <li>Augmentation: targeted back‑translation (MarianMT)</li>
-                </ul>
-                <div class="quick" style="margin-top:8px"><span class="tag">NLP</span><span class="tag">DistilBERT</span><span class="tag">Bi‑LSTM</span></div>
-              </article>
-              <article class="card col-6">
-                <h3>Emotion‑Aware Hybrid Model for Deepfake Video Detection</h3>
-                <p class="meta">Two‑stream system: EfficientNetB0 + Conv1D temporal head fused with global‑pooled emotion vectors (FER + MTCNN). Custom binary focal loss.</p>
-                <ul class="clean">
-                  <li>Benchmarks: emotion‑only logistic, scratch CNN, emotion RNN, VideoMAE</li>
-                  <li>Tooling: TensorFlow/Keras, PyTorch, OpenCV, NumPy</li>
-                  <li>Artifacts: per‑frame preprocessing, reproducible notebooks</li>
-                </ul>
-                <div class="quick" style="margin-top:8px"><span class="tag">CV</span><span class="tag">Keras</span><span class="tag">OpenCV</span></div>
-              </article>
-            </div>
-          </div>
-        </section>
-
-        <section id="publications">
-          <p class="section-title">Publications</p>
-          <div class="content-pad">
-            <div class="grid">
-              <div class="card col-6"><h3>A Comprehensive Approach to Sentiment‑Based Dynamic Pricing</h3><p class="meta">Real‑time pricing with NLP‑driven sentiment + supervised models; fairness emphasized.</p><a class="btn" href="https://ijrpr.com/uploads/V5ISSUE11/IJRPR35607.pdf" target="_blank" rel="noreferrer">Read Paper</a></div>
-              <div class="card col-6"><h3>Behavior‑Based Incentivization and Predictive Analytics</h3><p class="meta">Synthetic datasets, Logistic Regression & Random Forest, incentive strategy analysis.</p><a class="btn" href="https://ijrpr.com/uploads/V5ISSUE11/IJRPR34678.pdf" target="_blank" rel="noreferrer">Read Paper</a></div>
-            </div>
-          </div>
-        </section>
-
-        <section id="awards">
-          <p class="section-title">Honors & Awards</p>
-          <div class="content-pad">
-            <ul class="clean">
-              <li>Excellence in Event Leadership — May 2023</li>
-              <li>Sports Achievement Award — May 2023</li>
-              <li>Academic Excellence Award — Dec 2022</li>
-            </ul>
-          </div>
-        </section>
-
-        <section id="volunteering">
-          <p class="section-title">Volunteer Experience</p>
-          <div class="content-pad">
-            <div class="card">
-              <h3>Blood Donation Campaign — Friends2Support (Telangana, India)</h3>
-              <p class="meta">Conducted online/offline technical & soft‑skills training impacting 3,000+ students (Jan 2020 – Dec 2023).</p>
-            </div>
-          </div>
-        </section>
-
-        <section id="contact">
-          <p class="section-title">Contact</p>
-          <div class="content-pad">
-            <div class="grid">
-              <div class="card col-12">
-                <p>Email: <a href="mailto:notedevelopment@gmail.com">notedevelopment@gmail.com</a></p>
-                <div style="display:flex; gap:12px; flex-wrap:wrap; margin-top:10px">
-                  <a class="btn" href="mailto:notedevelopment@gmail.com">Get in touch</a>
-                  <a class="btn ghost" href="#">LinkedIn</a>
-                  <a class="btn ghost" href="#">GitHub</a>
-                  <a class="btn" href="#top">Back to top</a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <footer>© <span id="year"></span> Shashank Cheppala · All black, professional & fast.</footer>
-      </main>
+  <section id="intro" class="section">
+    <div class="container">
+      <h1 class="h1">Clean, Apple-style portfolio.<br/>Smooth scroll. Real-time 3D.</h1>
+      <p class="p">Scroll to rotate the model and reveal content. It’s all-black, mobile-first, and uses Lenis + GSAP for buttery scrolling. Three.js powers the 3D with a fallback if your GLB model is missing.</p>
     </div>
-  </div>
+  </section>
 
-  <!-- ====== 3D Scene (Three.js) ====== -->
+  <!-- Pinned 3D stage with scroll-scrub rotation -->
+  <section id="stage" class="stage-wrap">
+    <div class="stage">
+      <canvas id="stage-canvas"></canvas>
+      <div class="stage-overlay">
+        <div class="copy">
+          <span class="tag">NLP</span><span class="tag">CV</span><span class="tag">Analytics</span>
+          <h2 class="h1" style="margin-top:8px">I build explainable ML systems and the interfaces around them.</h2>
+          <p class="p">This 3D hero is pinned while you scroll. Rotation/zoom is scrubbed with ScrollTrigger for that Apple-product feel.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="work" class="section">
+    <div class="container">
+      <div class="grid">
+        <div class="col-6 card">
+          <h3>Fake News Detection Using LLMs & Deep Learning</h3>
+          <p class="p">Pipeline through classic ML → Bi-LSTM (GloVe) → DistilBERT fine-tune with augmentation and feature analysis.</p>
+        </div>
+        <div class="col-6 card">
+          <h3>Emotion-Aware Deepfake Detection</h3>
+          <p class="p">Two-stream EfficientNetB0 + temporal Conv1D fused with emotion vectors (FER/MTCNN). Custom focal loss, notebook artifacts.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>© <span id="year"></span> Shashank Cheppala — Apple-style 3D scroll.</footer>
+
+  <!-- Smooth scroll + ScrollTrigger + Three.js -->
   <script type="module">
-    // Skip animation for folks who prefer reduced motion
-    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
+    // Imports (ESM CDNs)
+    import Lenis from 'https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/bundled/lenis.min.js';
+    import gsap from 'https://cdn.jsdelivr.net/npm/gsap@3.12.5/index.js';
+    import { ScrollTrigger } from 'https://cdn.jsdelivr.net/npm/gsap@3.12.5/ScrollTrigger.js';
     import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
     import { OrbitControls } from 'https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+    import { GLTFLoader } from 'https://unpkg.com/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
 
-    const canvas = document.getElementById('scene');
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    // Smooth scrolling
+    const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const lenis = new Lenis({ lerp: prefersReduced ? 1 : 0.08, smoothWheel: !prefersReduced });
+    function raf(t){ lenis.raf(t); requestAnimationFrame(raf) }
+    requestAnimationFrame(raf);
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Three.js setup
+    const canvas = document.getElementById('stage-canvas');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true, powerPreference:'high-performance' });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(55, 2, 0.1, 200);
-    camera.position.set(0, 0.6, 3.6);
+    const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 100);
+    camera.position.set(0, .6, 3.6);
 
-    // Lighting
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1.2); keyLight.position.set(2,2,2);
-    const rimLight = new THREE.DirectionalLight(0x99ccff, 0.8); rimLight.position.set(-2,1,-1);
-    const fill = new THREE.AmbientLight(0x404040, 0.6);
-    scene.add(keyLight, rimLight, fill);
+    const key = new THREE.DirectionalLight(0xffffff, 1.15); key.position.set(2,2,2);
+    const fill = new THREE.AmbientLight(0x404040, .8);
+    scene.add(key, fill);
 
-    // Torus knot core (glossy wireframe)
-    const geo = new THREE.TorusKnotGeometry(0.7, 0.22, 220, 32, 2, 3);
-    const mat = new THREE.MeshPhysicalMaterial({ color:0xffffff, metalness:0.9, roughness:0.15, transmission:0, clearcoat:1, envMapIntensity:1 });
-    const mesh = new THREE.Mesh(geo, mat);
-    scene.add(mesh);
+    // Load GLB or fallback torus
+    let root = new THREE.Group(); scene.add(root);
+    const loader = new GLTFLoader();
+    loader.load('/models/model.glb',
+      (g)=>{ root.add(g.scene); g.scene.scale.set(1.2,1.2,1.2); },
+      undefined,
+      ()=>{ // fallback
+        const geo = new THREE.TorusKnotGeometry(0.7, 0.22, 220, 36, 2, 3);
+        const mat = new THREE.MeshPhysicalMaterial({ color:0xffffff, metalness:0.9, roughness:0.15, clearcoat:1 });
+        const mesh = new THREE.Mesh(geo, mat); root.add(mesh);
+        const wire = new THREE.LineSegments(new THREE.WireframeGeometry(geo), new THREE.LineBasicMaterial({color:0xffffff, opacity:.18, transparent:true}));
+        mesh.add(wire);
+      }
+    );
 
-    // Wireframe overlay for tech vibe
-    const wire = new THREE.WireframeGeometry(geo);
-    const line = new THREE.LineSegments(wire, new THREE.LineBasicMaterial({ color:0xffffff, transparent:true, opacity:0.18 }));
-    mesh.add(line);
-
-    // Starfield particles
-    const starGeo = new THREE.BufferGeometry();
-    const count = 800;
-    const positions = new Float32Array(count*3);
-    for(let i=0;i<count;i++){
-      const r = THREE.MathUtils.randFloat(2.5, 8);
-      const a = Math.random()*Math.PI*2;
-      const b = Math.acos(THREE.MathUtils.randFloatSpread(2));
-      positions[i*3+0] = r*Math.sin(b)*Math.cos(a);
-      positions[i*3+1] = r*Math.sin(b)*Math.sin(a)*0.6;
-      positions[i*3+2] = r*Math.cos(b);
-    }
-    starGeo.setAttribute('position', new THREE.BufferAttribute(positions,3));
-    const stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ size:0.012, color:0xffffff, transparent:true, opacity:0.75 }));
-    scene.add(stars);
-
-    // Controls (disabled interaction on mobile for performance)
     const controls = new OrbitControls(camera, canvas);
-    controls.enableZoom = false; controls.enablePan = false; controls.enableDamping = true; controls.dampingFactor = 0.06;
+    controls.enabled = false;
 
     function resize(){
       const rect = canvas.getBoundingClientRect();
-      const w = rect.width, h = rect.height;
-      renderer.setSize(w, h, false);
-      camera.aspect = w/h || 1; camera.updateProjectionMatrix();
+      renderer.setSize(rect.width, rect.height, false);
+      camera.aspect = Math.max(rect.width / Math.max(1, rect.height), 1e-6);
+      camera.updateProjectionMatrix();
     }
-    resize();
-    window.addEventListener('resize', resize);
+    resize(); addEventListener('resize', resize);
 
-    let t=0; const clock = new THREE.Clock();
-    function tick(){
-      if(prefersReduced) return; // keep canvas static
-      const dt = clock.getDelta(); t += dt;
-      mesh.rotation.x += dt*0.25; mesh.rotation.y -= dt*0.35;
-      line.rotation.copy(mesh.rotation);
-      stars.rotation.y += dt*0.03;
-      controls.update();
-      renderer.render(scene, camera);
-      requestAnimationFrame(tick);
-    }
-    renderer.setAnimationLoop(() => { renderer.render(scene, camera); });
-    requestAnimationFrame(tick);
-  </script>
+    renderer.setAnimationLoop(()=>{ renderer.render(scene, camera) });
 
-  <script>
+    // Pin the stage and scrub the model rotation/zoom
+    const stage = document.querySelector('.stage-wrap');
+    ScrollTrigger.create({
+      trigger: stage,
+      start: 'top top',
+      end: 'bottom top',
+      pin: '.stage',
+      pinSpacing: false
+    });
+
+    gsap.to(root.rotation, {
+      x: Math.PI*1.0, y: Math.PI*2.0, ease: 'none',
+      scrollTrigger: { trigger: stage, start: 'top top', end: 'bottom top', scrub: true }
+    });
+
+    gsap.to(camera.position, {
+      z: 2.2, ease: 'power1.out',
+      scrollTrigger: { trigger: stage, start: 'top top', end: 'bottom top', scrub: true }
+    });
+
+    gsap.fromTo('.stage-overlay .copy', {opacity:1, y:0}, {
+      opacity:0, y:-40, ease:'none',
+      scrollTrigger:{ trigger: stage, start:'center center', end:'bottom top', scrub:true }
+    });
+
     document.getElementById('year').textContent = new Date().getFullYear();
   </script>
 </body>
