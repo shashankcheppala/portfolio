@@ -1,14 +1,10 @@
 // src/components/Education.js
 import React, { useEffect } from "react";
-import Lottie from "lottie-react";
-import bookc from "../lottie/bookc.json";
-import GlowCard from "../Data/GlowCard";
 import { Educations } from "../Data/Education";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import SectionTitle from "./SectionTitle";
 
-const Education = () => {
+export default function Education() {
   useEffect(() => {
     AOS.init();
   }, []);
@@ -16,53 +12,45 @@ const Education = () => {
   return (
     <section
       id="education"
-      className="min-h-screen flex items-center justify-center px-5 md:px-10 overflow-hidden"
+      className="min-h-screen flex flex-col justify-center items-center px-5 md:px-10"
       data-aos="fade-up"
     >
-      <div className="w-full max-w-screen-xl flex flex-col items-center">
-        {/* Title */}
-        <SectionTitle>Education</SectionTitle>
+      {/* Title */}
+      <h2 className="text-4xl md:text-5xl font-extrabold text-[#00040f] dark:text-slate-200 mb-12 text-center">
+        Education
+      </h2>
 
-        <div className="flex flex-col md:flex-row items-center justify-center mt-12 gap-12 w-full">
-          {/* Animation */}
-          <div className="md:w-1/2 flex justify-center">
-            <Lottie
-              animationData={bookc}
-              loop={true}
-              className="max-w-[350px] md:max-w-[450px] h-auto rounded-xl border border-[#00040f] lottie-3d-effect"
-            />
+      {/* Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-screen-xl">
+        {Educations.map((edu) => (
+          <div
+            key={edu.id}
+            className="bg-white dark:bg-[#0b0b0b] border border-gray-200/70 dark:border-white/10 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all"
+          >
+            {/* Big Image */}
+            <div className="h-64 md:h-80 w-full overflow-hidden">
+              <img
+                src={edu.logo}
+                alt={edu.title}
+                className="w-full h-full object-cover transform transition-transform duration-500 hover:scale-105"
+              />
+            </div>
+
+            {/* Text */}
+            <div className="p-6 text-center">
+              <p className="text-[#16f2b3] text-sm md:text-base font-medium">
+                {edu.duration}
+              </p>
+              <h3 className="text-xl md:text-2xl font-semibold text-[#00040f] dark:text-slate-200 mt-2">
+                {edu.title}
+              </h3>
+              <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 mt-2">
+                {edu.institution}
+              </p>
+            </div>
           </div>
-
-          {/* Cards */}
-          <div className="flex flex-col gap-8 md:w-1/2">
-            {Educations.map((education) => (
-              <GlowCard key={education.id} identifier={`education-${education.id}`}>
-                <div className="flex flex-col items-center text-center p-6">
-                  {/* Big Logo */}
-                  <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden border border-gray-300 mb-4 shadow-md">
-                    <img
-                      src={education.logo}
-                      alt={education.institution}
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-
-                  {/* Details */}
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-semibold text-white mb-1">
-                    {education.institution}
-                  </h3>
-                  <p className="text-sm sm:text-base text-gray-300 mb-1">
-                    {education.title}
-                  </p>
-                  <p className="text-xs sm:text-sm text-[#16f2b3]">{education.duration}</p>
-                </div>
-              </GlowCard>
-            ))}
-          </div>
-        </div>
+        ))}
       </div>
     </section>
   );
-};
-
-export default Education;
+}
