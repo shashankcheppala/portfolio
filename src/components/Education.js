@@ -12,7 +12,7 @@ export default function Education() {
   return (
     <section
       id="education"
-      className="min-h-screen flex flex-col justify-center items-center px-5 md:px-10"
+      className="max-w-screen-lg mx-auto relative border-t my-12 lg:my-24 border-[#25213b] overflow-hidden"
       data-aos="fade-up"
     >
       {/* Title */}
@@ -54,3 +54,4 @@ export default function Education() {
     </section>
   );
 }
+
