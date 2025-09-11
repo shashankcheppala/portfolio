@@ -1,15 +1,15 @@
+// src/App.js
 import HashLoader from "react-spinners/HashLoader";
 import { useState, useEffect } from "react";
 import NavBar from "./components/NavBar";
 import Skills from "./components/Skills";
 import Project from "./components/Project";
-import { BrowserRouter as Router } from "react-router-dom";
 import Home from "./components/Home";
 import About from "./components/About";
 import Education from "./components/Education";
 import Contact from "./components/Contact";
 import Experinces from "./components/Experinces";
-import Medium from "./components/Medium";  // <-- NEW import
+import Medium from "./components/Medium";   // ✅ Import Medium
 
 const override = {
   display: "flex",
@@ -44,17 +44,15 @@ const App = () => {
         </div>
       ) : (
         <div>
-          <div>
-            <NavBar />
-            <Home />
-            <About />
-            <Experinces />
-            <Skills />
-            <Project />
-            <Medium />   {/* <-- NEW Medium section */}
-            <Education />
-            <Contact />
-          </div>
+          <NavBar />
+          <Home />
+          <About />
+          <Experinces />
+          <Skills />
+          <Project />
+          <Education />
+          <Medium />   {/* ✅ Medium Articles appear right after Education */}
+          <Contact />
         </div>
       )}
     </>
