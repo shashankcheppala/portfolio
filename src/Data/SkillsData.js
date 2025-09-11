@@ -43,7 +43,6 @@ export const skillsData = [
   // Software Tools & Version Control
   "Git",
   "GitHub",
-  "PyCharm",
   "VS Code",
 
   // Core Domains
