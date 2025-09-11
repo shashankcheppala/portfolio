@@ -1,4 +1,4 @@
-# Shashank Cheppala — Portfolio
+# Shashank Cheppala Portfolio
 
 A fast, mobile-first portfolio inspired by Apple-style motion and subtle 3D, built with **React (CRA)**, **Tailwind CSS**, **AOS** animations, **Lottie**, and **react-slick** carousels.
 
