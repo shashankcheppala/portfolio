@@ -1,58 +1,46 @@
 // src/components/About.js
 import { Data } from "../Data/Constants";
 import Lottie from "lottie-react";
-import AOS from "aos";
-import "aos/dist/aos.css";
 import first from "../lottie/first.json";
-import { useEffect } from "react";
-import SectionTitle from "./SectionTitle"; // ⬅️ new
 
 const About = () => {
-  useEffect(() => {
-    AOS.init();
-  }, []);
-
   return (
     <section
       id="about"
-      className="max-w-screen-lg mx-auto relative z-50 border-t my-12 lg:my-24 border-[#25213b] overflow-x-hidden overflow-hidden"
-      data-aos="fade-down"
+      className="min-h-screen flex items-center justify-center px-5 md:px-10"
     >
-      <div className="w-[100px] h-[100px] mb-16 bg-violet-100 rounded-full absolute top-6 left-1/2 -translate-x-1/2 filter blur-3xl opacity-20" />
-
-      <div className="flex justify-center -translate-y-[1px]">
-        <div className="w-3/4">
-          <div className="h-[1px] bg-gradient-to-r from-transparent via-violet-500 to-transparent w-full" />
-        </div>
-      </div>
-
-      {/* Title */}
-      <div className="flex justify-center text-center mt-10 my-5 lg:py-8">
-        <SectionTitle>About Me</SectionTitle>
-      </div>
-
-      <div
-        className="flex flex-col md:flex-row justify-center mt-16 md:mt-0 space-y-6 md:space-y-0 md:space-x-10"
-        data-aos="fade-up"
-      >
-        <div
-          className="w-full md:w-auto md:flex-1 md:relative md:mr-10"
-          style={{ perspective: "1000px" }}
-        >
+      <div className="w-full max-w-screen-lg grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14 items-center">
+        {/* Left: Lottie (purple object) */}
+        <div className="flex justify-center">
           <Lottie
             animationData={first}
-            loop={true}
-            className="max-w-[650px] md:max-w-[800px] h-auto lottie-3d-effect"
+            loop
+            className="max-w-[520px] md:max-w-[640px] h-auto"
           />
         </div>
 
-        <div className="md:w-auto md:flex-1 md:mb-5 button-animation border-gray-300 rounded-xl p-5 md:mx-0 md:ml-2 md:mr-2 m-3 sm:m-12">
-          <div className="mb-3 font-semibold text-pink-500 dark:text-[#16f2b3] text-base md:text-lg text-center uppercase tracking-wide">
-            Who I am?
-          </div>
-          <p className="text-zinc-800 dark:text-zinc-200 text-[15px] md:text-[16px] leading-7 md:leading-8">
+        {/* Right: Text */}
+        <div>
+          <h2 className="text-4xl md:text-5xl font-extrabold text-[#00040f] dark:text-slate-200 mb-6">
+            About Me
+          </h2>
+
+          <p className="text-base md:text-lg leading-relaxed text-[#00040f] dark:text-slate-300">
             {Data.description}
           </p>
+
+          {/* quick tags (optional – remove if not needed) */}
+          <div className="mt-6 flex flex-wrap gap-2">
+            <span className="px-3 py-1 rounded-full border border-gray-300 dark:border-gray-600 text-sm text-gray-700 dark:text-gray-300">
+              Python
+            </span>
+            <span className="px-3 py-1 rounded-full border border-gray-300 dark:border-gray-600 text-sm text-gray-700 dark:text-gray-300">
+              Machine Learning
+            </span>
+            <span className="px-3 py-1 rounded-full border border-gray-300 dark:border-gray-600 text-sm text-gray-700 dark:text-gray-300">
+              Data Analytics
+            </span>
+          </div>
         </div>
       </div>
     </section>
