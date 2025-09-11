@@ -46,47 +46,35 @@ const Education = () => {
         </div>
 
         <div
-          className="flex flex-col gap-4 sm:gap-6 md:w-3/4 lg:w-1/2"
+          className="flex flex-col gap-6 sm:gap-8 md:w-3/4 lg:w-1/2"
           style={{ margin: "0 16px" }}
         >
           {Educations.map((education) => (
             <GlowCard
-              key={education.id ?? `${education.institution}-${education.title}`}
-              identifier={`education-${education.id ?? education.institution}`}
+              key={education.id}
+              identifier={`education-${education.id}`}
             >
               <div>
                 <p className="text-xs sm:text-sm text-[#16f2b3] mt-4 text-center">
                   {education.duration}
                 </p>
               </div>
-
-              <div className="px-3 pr-2 py-2 relative text-white flex flex-col items-start">
-                <div className="flex items-center gap-3">
-                  {/* Logo */}
-                  <div className="w-15 h-15 rounded-full overflow-hidden">
-                    {education.logo ? (
-                      <img
-                        src={education.logo}
-                        alt={`${education.institution} logo`}
-                        width={80}
-                        height={80}
-                        loading="lazy"
-                        className="opacity-80"
-                      />
-                    ) : (
-                      <div
-                        className="w-[80px] h-[80px] rounded-full bg-[#1a1a1a] border border-[#25213b]"
-                        aria-hidden="true"
-                        title={education.institution}
-                      />
-                    )}
+              <div className="px-3 pr-2 py-4 relative text-white flex flex-col items-start gap-4">
+                <div className="flex items-center gap-4">
+                  {/* Bigger logo with responsive size */}
+                  <div className="flex-shrink-0">
+                    <img
+                      src={education.logo}
+                      alt={`${education.institution} logo`}
+                      className="w-32 h-32 md:w-48 md:h-48 object-contain rounded-xl shadow-md"
+                    />
                   </div>
 
                   <div className="flex flex-col text-left">
-                    <p className="text-base sm:text-xl mb-1 font-medium uppercase">
+                    <p className="text-lg sm:text-2xl mb-1 font-semibold uppercase text-left">
                       {education.title}
                     </p>
-                    <p className="text-sm sm:text-base">
+                    <p className="text-sm sm:text-base text-left">
                       {education.institution}
                     </p>
                   </div>
