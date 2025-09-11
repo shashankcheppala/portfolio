@@ -1,60 +1,103 @@
 // src/components/Skills.js
-import React, { useEffect } from "react";
-import { skillsData } from "../Data/SkillsData";
-import { skillsImage } from "../Data/SkilsImage";
 import Marquee from "react-fast-marquee";
 import LazyLoad from "react-lazy-load";
-import AOS from "aos";
-import "aos/dist/aos.css";
-import SectionTitle from "./SectionTitle";
+import { skillsData } from "../Data/SkillsData";
+import { skillsImage } from "../Data/SkilsImage";
 
 const Skills = () => {
-  useEffect(() => {
-    AOS.init();
-  }, []);
-
   return (
-    <div
+    <section
       id="skills"
-      className="max-w-screen-lg mx-auto relative z-50 border-t my-12 lg:my-24 border-[#25213b] overflow-x-hidden overflow-hidden"
+      className="min-h-screen flex items-center justify-center px-5 md:px-10 overflow-hidden"
     >
-      <div className="w-[100px] h-[100px] bg-violet-100 rounded-full absolute top-6 left-1/2 -translate-x-1/2 filter blur-3xl opacity-20" />
-      <div className="flex justify-center -translate-y-[1px]">
-        <div className="w-3/4">
-          <div className="h-[1px] bg-gradient-to-r from-transparent via-violet-500 to-transparent w-full" />
-        </div>
-      </div>
+      <div className="w-full max-w-screen-xl">
+        {/* Title */}
+        <h2 className="text-4xl md:text-5xl font-extrabold text-[#00040f] dark:text-slate-200 mb-10 text-center md:text-left">
+          Skills
+        </h2>
 
-      <div className="flex justify-center mt-10 my-5 lg:py-8">
-        <SectionTitle>Skills</SectionTitle>
-      </div>
-
-      <div className="w-full my-12">
-        <Marquee className="marquee" delay={0} play speed={80} pauseOnHover pauseOnClick direction="left">
-          {skillsData.map((skill, id) => (
-            <div
-              key={id}
-              className="w-36 min-w-fit h-fit flex flex-col items-center justify-center transition-all duration-500 m-3 sm:m-5 rounded-lg group relative hover:scale-[1.15] cursor-pointer"
-              data-aos="fade-up"
-            >
-              <div className="h-full w-full rounded-lg border border-[#1f223c] bg-[#11152c] shadow-none shadow-gray-50 group-hover:border-violet-500 transition-all duration-500">
-                <div className="flex -translate-y-[1px] justify-center">
-                  <div className="w-3/4"><div className="h-[1px] w-full bg-gradient-to-r from-transparent via-violet-500 to-transparent" /></div>
-                </div>
-                <div className="flex flex-col items-center justify-center gap-3 p-6">
-                  <div className="h-8 sm:h-12">
-                    <LazyLoad height={50} offset={100}>
-                      <img src={skillsImage(skill)} alt={skill} width={40} height={40} className="h-full w-auto rounded-lg" />
-                    </LazyLoad>
+        {/* Marquee row 1 (LTR) */}
+        <div className="w-full mb-10">
+          <Marquee
+            speed={70}
+            pauseOnHover
+            gradient={false}
+            className="py-2"
+          >
+            {skillsData.map((skill, id) => (
+              <div
+                key={`row1-${id}`}
+                className="w-36 min-w-fit h-fit flex flex-col items-center justify-center transition-transform duration-300 m-3 sm:m-5 rounded-lg hover:scale-[1.12] cursor-pointer"
+              >
+                <div className="h-full w-full rounded-lg border border-[#1f223c] bg-[#11152c] dark:bg-[#11152c]">
+                  <div className="flex justify-center">
+                    <div className="w-3/4">
+                      <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-violet-500 to-transparent" />
+                    </div>
                   </div>
-                  <p className="text-white text-sm sm:text-lg">{skill}</p>
+                  <div className="flex flex-col items-center justify-center gap-3 p-6">
+                    <div className="h-10 sm:h-12">
+                      <LazyLoad height={48} offset={100}>
+                        <img
+                          src={skillsImage(skill)}
+                          alt={skill}
+                          width={44}
+                          height={44}
+                          className="h-full w-auto rounded-lg"
+                          loading="lazy"
+                        />
+                      </LazyLoad>
+                    </div>
+                    <p className="text-white text-sm sm:text-lg">{skill}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </Marquee>
+            ))}
+          </Marquee>
+        </div>
+
+        {/* Marquee row 2 (RTL for variation) */}
+        <div className="w-full">
+          <Marquee
+            speed={65}
+            pauseOnHover
+            gradient={false}
+            direction="right"
+            className="py-2"
+          >
+            {skillsData.map((skill, id) => (
+              <div
+                key={`row2-${id}`}
+                className="w-36 min-w-fit h-fit flex flex-col items-center justify-center transition-transform duration-300 m-3 sm:m-5 rounded-lg hover:scale-[1.12] cursor-pointer"
+              >
+                <div className="h-full w-full rounded-lg border border-[#1f223c] bg-[#11152c] dark:bg-[#11152c]">
+                  <div className="flex justify-center">
+                    <div className="w-3/4">
+                      <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-violet-500 to-transparent" />
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-center justify-center gap-3 p-6">
+                    <div className="h-10 sm:h-12">
+                      <LazyLoad height={48} offset={100}>
+                        <img
+                          src={skillsImage(skill)}
+                          alt={skill}
+                          width={44}
+                          height={44}
+                          className="h-full w-auto rounded-lg"
+                          loading="lazy"
+                        />
+                      </LazyLoad>
+                    </div>
+                    <p className="text-white text-sm sm:text-lg">{skill}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </Marquee>
+        </div>
       </div>
-    </div>
+    </section>
   );
 };
 

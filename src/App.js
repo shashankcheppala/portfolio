@@ -51,7 +51,7 @@ const App = () => {
           <Skills />
           <Project />
           <Education />
-          <Medium />   {/* ✅ Medium Articles appear right after Education */}
+          <Medium />
           <Contact />
         </div>
       )}

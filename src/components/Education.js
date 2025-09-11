@@ -1,58 +1,58 @@
 // src/components/Education.js
-import React, { useEffect } from "react";
 import Lottie from "lottie-react";
 import bookc from "../lottie/bookc.json";
-import GlowCard from "../Data/GlowCard";
 import { Educations } from "../Data/Education";
-import AOS from "aos";
-import "aos/dist/aos.css";
-import SectionTitle from "./SectionTitle";
 
 const Education = () => {
-  useEffect(() => {
-    AOS.init();
-  }, []);
-
   return (
     <section
       id="education"
-      className="max-w-screen-lg mx-auto relative border-t my-12 lg:my-24 border-[#25213b] overflow-x-hidden overflow-hidden"
-      data-aos="fade-up"
+      className="min-h-screen flex items-center justify-center px-5 md:px-10 overflow-hidden"
     >
-      <div className="w-[100px] h-[100px] mb-16 bg-violet-100 rounded-full absolute top-6 left-1/2 -translate-x-1/2 filter blur-3xl opacity-20" />
-      <div className="flex justify-center -translate-y-[1px]">
-        <div className="w-3/4"><div className="h-[1px] bg-gradient-to-r from-transparent via-violet-500 to-transparent w-full" /></div>
-      </div>
-
-      <div className="flex justify-center mt-10 my-2 lg:py-6">
-        <SectionTitle>Education</SectionTitle>
-      </div>
-
-      <div className="flex flex-col items-center mt-16 md:flex-row md:justify-center space-y-10 md:space-y-0 md:space-x-10" data-aos="fade-up">
-        <div className="md:w-1/2" style={{ perspective: "1000px" }}>
+      <div className="w-full max-w-screen-xl grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14 items-center">
+        {/* Left: Lottie animation */}
+        <div className="flex justify-center md:justify-start">
           <Lottie
             animationData={bookc}
             loop
-            className="max-w-[300px] md:max-w-[400px] h-auto rounded-xl border border-[#00040f] lottie-3d-effect mb-10"
+            className="w-full max-w-[400px] sm:max-w-[500px] md:max-w-[600px] h-auto"
           />
         </div>
 
-        <div className="flex flex-col gap-8 md:w-3/4 lg:w-1/2">
-          {Educations.map((education) => (
-            <GlowCard key={education.id} identifier={`education-${education.id}`}>
-              <div className="flex flex-col items-center text-center px-4 py-4">
-                {/* Big top image like Medium */}
-                <img
-                  src={education.logo}
-                  alt={`${education.institution} logo`}
-                  className="w-full h-56 md:h-64 object-contain bg-gray-50 dark:bg-black p-6 rounded-xl shadow-lg mb-4"
-                />
-                <p className="text-[#16f2b3] text-sm md:text-base mb-2">{education.duration}</p>
-                <p className="text-lg md:text-2xl font-semibold uppercase mb-1">{education.title}</p>
-                <p className="text-sm md:text-lg">{education.institution}</p>
-              </div>
-            </GlowCard>
-          ))}
+        {/* Right: Education list */}
+        <div>
+          <h2 className="text-4xl md:text-5xl font-extrabold text-[#00040f] dark:text-slate-200 mb-6 text-center md:text-left">
+            Education
+          </h2>
+
+          <div className="space-y-8">
+            {Educations.map((edu) => (
+              <article
+                key={edu.id}
+                className="group text-center md:text-left transition-transform duration-200 hover:-translate-y-0.5"
+              >
+                {/* Big logo */}
+                <div className="flex justify-center md:justify-start mb-4">
+                  <img
+                    src={edu.logo}
+                    alt={edu.institution}
+                    className="w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 object-contain rounded-full shadow-lg group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+
+                {/* Title + institution */}
+                <h3 className="text-xl md:text-2xl font-semibold text-[#00040f] dark:text-slate-100">
+                  {edu.title}
+                </h3>
+                <p className="text-base md:text-lg text-gray-700 dark:text-gray-300">
+                  {edu.institution}
+                </p>
+                <p className="text-sm md:text-base text-pink-600 dark:text-[#16f2b3] mt-1">
+                  {edu.duration}
+                </p>
+              </article>
+            ))}
+          </div>
         </div>
       </div>
     </section>

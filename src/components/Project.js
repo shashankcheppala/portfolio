@@ -1,173 +1,110 @@
-import AOS from "aos";
-import "aos/dist/aos.css";
-import { useState, useEffect } from "react";
+// src/components/Project.js
+import { useState } from "react";
 import { projects } from "../Data/Projects";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 import { FaGithub } from "react-icons/fa";
 import { IoIosLink } from "react-icons/io";
 
 const Project = () => {
-  useEffect(() => {
-    AOS.init();
-  }, []);
-
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 2000,
-    arrows: false,
-    responsive: [
-      { breakpoint: 1024, settings: { slidesToShow: 1 } },
-      { breakpoint: 600, settings: { slidesToShow: 1 } },
-    ],
-  };
-
-  const openGithubLink = (url) => {
-    if (url) window.open(url, "_blank", "noopener,noreferrer");
-  };
-
-  const openProjectLink = (url) => {
-    if (url) window.open(url, "_blank", "noopener,noreferrer");
-  };
-
   const [expanded, setExpanded] = useState({});
 
-  const toggleDescription = (projectId) => {
-    setExpanded((prev) => ({ ...prev, [projectId]: !prev[projectId] }));
+  const toggleDescription = (id) => {
+    setExpanded((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
   };
 
   return (
     <section
       id="projects"
-      className="max-w-screen-lg mx-auto relative z-50 border-t my-12 lg:my-24 border-[#25213b] overflow-x-hidden overflow-hidden"
-      data-aos="fade-down"
+      className="min-h-screen flex items-center justify-center px-5 md:px-10 overflow-hidden"
     >
-      <div className="w-[100px] h-[100px] bg-violet-100 rounded-full absolute top-6 left-[42%] translate-x-1/2 filter blur-3xl opacity-20"></div>
+      <div className="w-full max-w-screen-xl flex flex-col items-center">
+        {/* Title */}
+        <h2 className="text-4xl md:text-5xl font-extrabold text-[#00040f] dark:text-slate-200 mb-12 text-center">
+          Projects
+        </h2>
 
-      <div className="flex justify-center -translate-y-[1px]">
-        <div className="w-3/4">
-          <div className="h-[1px] bg-gradient-to-r from-transparent via-violet-500 to-transparent w-full" />
-        </div>
-      </div>
-
-      <div className="mt-8" data-aos="fade-down">
-        <div className="flex justify-center mt-10 my-5 lg:py-8">
-          <div className="flex items-center">
-            <span className="text-[#00040f] dark:text-slate-300 text-center font-extrabold mb-3 max-sm:text-2xl p-2 px-8 text-5xl ml-[-70px]">
-              Projects
-            </span>
-          </div>
-        </div>
-
-        <div
-          className="grid gap-6 grid-cols-1 sm:grid-cols-3 max-sm:grid-cols-1 mt-16"
-          style={{ padding: "0 20px" }}
-          data-aos="fade-down"
-        >
-          {projects.map((project) => {
-            const wordCount = project.description?.split(" ").length || 0;
-            const showReadMore = wordCount > 30;
-            const shortText = project.description
-              ? project.description.split(" ").slice(0, 30).join(" ")
-              : "";
-
-            return (
-              <div
-                key={project.id}
-                className="flex flex-col rounded overflow-hidden shadow-lg bg-[#e1e1e1] dark:bg-transparent button-animation hover:bg-gradient-to-tl from-[#ccc] to-[#e1e1e1] dark:from-[#00040F] dark:to-[#0B274C] sm:col-span-1"
-                style={{ marginBottom: "20px" }}
-              >
-                <div className="relative w-full h-[120px] sm:h-[150px] overflow-hidden px-3 py-3">
-                  {Array.isArray(project.images) && project.images.length > 0 ? (
-                    <Slider {...settings}>
-                      {project.images.map((image, index) => (
-                        <img
-                          key={index}
-                          src={image}
-                          alt={`${project.title} screenshot ${index + 1}`}
-                          className="w-full h-full object-cover"
-                          loading="lazy"
-                        />
-                      ))}
-                    </Slider>
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-sm text-gray-500 dark:text-gray-400">
-                      No preview
-                    </div>
-                  )}
+        {/* Grid of projects */}
+        <div className="grid gap-10 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full">
+          {projects.map((project) => (
+            <article
+              key={project.id}
+              className="bg-[#f5f5f5] dark:bg-[#0a0a0a] rounded-xl shadow-lg p-6 flex flex-col justify-between transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl"
+            >
+              {/* Images */}
+              {project.images.length > 0 && (
+                <div className="w-full h-48 overflow-hidden rounded-lg mb-4">
+                  <img
+                    src={project.images[0]}
+                    alt={project.title}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
+              )}
 
-                <div className="flex-grow flex flex-col justify-between px-4 py-4">
-                  <div className="flex flex-wrap mb-2">
-                    {Array.isArray(project.tags) &&
-                      project.tags.map((tag, index) => (
-                        <button
-                          key={index}
-                          className="bg-gray-200 dark:bg-gray-700 dark:text-gray-200 rounded-2xl px-2 py-1 text-xs font-semibold text-gray-700 mr-1 mb-2"
-                          type="button"
-                          aria-label={`Tag ${tag}`}
-                        >
-                          {tag}
-                        </button>
-                      ))}
-                  </div>
+              {/* Title */}
+              <h3 className="text-xl md:text-2xl font-semibold text-[#00040f] dark:text-slate-100 mb-2">
+                {project.title}
+              </h3>
 
-                  <div className="font-bold text-lg mb-2 text-[#00040f] dark:text-slate-200">
-                    {project.title}
-                  </div>
-                  {project.date && (
-                    <p className="text-gray-700 text-sm mb-2 text-left">
-                      {project.date}
-                    </p>
-                  )}
+              {/* Date */}
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                {project.date}
+              </p>
 
-                  <p className="text-gray-500 text-sm text-left mb-2">
-                    {expanded[project.id] ? project.description : shortText}
-                    {showReadMore && (
-                      <>
-                        {!expanded[project.id] && "… "}
-                        <button
-                          className="text-blue-600 hover:underline"
-                          onClick={() => toggleDescription(project.id)}
-                          type="button"
-                          aria-label={expanded[project.id] ? "Read less" : "Read more"}
-                        >
-                          {expanded[project.id] ? "Read Less" : "Read More"}
-                        </button>
-                      </>
-                    )}
-                  </p>
-
-                  <div className="flex justify-between">
-                    <button
-                      className="flex items-center bg-gradient-to-r from-pink-500 to-pink-600 text-white py-2 px-4 transition-all hover:scale-105 rounded-full duration-300 h-14 w-14"
-                      onClick={() => openGithubLink(project.github)}
-                      type="button"
-                      aria-label="Open GitHub"
-                      title="GitHub"
-                    >
-                      <FaGithub size={30} />
-                    </button>
-                    <button
-                      className="flex items-center bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2 px-4 transition-all hover:scale-105 rounded-full duration-300 h-14 w-14"
-                      onClick={() => openProjectLink(project.webapp)}
-                      type="button"
-                      aria-label="Open live project"
-                      title="Live project"
-                    >
-                      <IoIosLink size={30} />
-                    </button>
-                  </div>
-                </div>
+              {/* Tags */}
+              <div className="flex flex-wrap gap-2 mb-3">
+                {project.tags.map((tag, idx) => (
+                  <span
+                    key={idx}
+                    className="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3 py-1 rounded-full text-xs"
+                  >
+                    {tag}
+                  </span>
+                ))}
               </div>
-            );
-          })}
+
+              {/* Description */}
+              <p className="text-sm text-gray-700 dark:text-gray-300 mb-4">
+                {expanded[project.id]
+                  ? project.description
+                  : project.description.split(" ").slice(0, 25).join(" ") + "..."}
+                {project.description.split(" ").length > 25 && (
+                  <button
+                    className="text-blue-600 dark:text-cyan-400 hover:underline ml-1"
+                    onClick={() => toggleDescription(project.id)}
+                  >
+                    {expanded[project.id] ? "Read less" : "Read more"}
+                  </button>
+                )}
+              </p>
+
+              {/* Links */}
+              <div className="flex gap-4 mt-auto">
+                {project.github && (
+                  <a
+                    href={project.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center bg-gradient-to-r from-pink-500 to-pink-600 text-white p-3 rounded-full hover:scale-110 transition-transform"
+                  >
+                    <FaGithub size={22} />
+                  </a>
+                )}
+                {project.webapp && (
+                  <a
+                    href={project.webapp}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center bg-gradient-to-r from-blue-500 to-blue-600 text-white p-3 rounded-full hover:scale-110 transition-transform"
+                  >
+                    <IoIosLink size={22} />
+                  </a>
+                )}
+              </div>
+            </article>
+          ))}
         </div>
       </div>
     </section>
