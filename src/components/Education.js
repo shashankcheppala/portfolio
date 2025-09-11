@@ -1,88 +1,37 @@
-import React, { useEffect } from "react";
-import Lottie from "lottie-react";
-import bookc from "../lottie/bookc.json";
-import GlowCard from "../Data/GlowCard";
+// src/components/Education.js
+import React from "react";
 import { Educations } from "../Data/Education";
-import AOS from "aos";
-import "aos/dist/aos.css";
 
 const Education = () => {
-  useEffect(() => {
-    AOS.init();
-  }, []);
-
   return (
     <section
       id="education"
-      className="max-w-screen-lg mx-auto relative border-t my-12 lg:my-24 border-[#25213b] overflow-x-hidden overflow-hidden"
-      data-aos="fade-up"
+      className="py-20 px-5 bg-white dark:bg-[#000000] text-gray-900 dark:text-white"
     >
-      <div className="w-[100px] h-[100px] mb-16 bg-violet-100 rounded-full absolute top-6 left-[42%] translate-x-1/2 filter blur-3xl opacity-20"></div>
+      <h2 className="text-4xl font-bold text-center mb-12">Education</h2>
+      <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 place-items-center">
+        {Educations.map((edu) => (
+          <div
+            key={edu.id}
+            className="bg-white dark:bg-[#111] shadow-lg rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden w-[90%] max-w-[400px]"
+          >
+            {/* Large Logo (like Medium image) */}
+            <img
+              src={edu.logo}
+              alt={edu.institution}
+              className="w-full h-56 object-contain bg-gray-50 dark:bg-black p-6"
+            />
 
-      <div className="flex justify-center -translate-y-[1px]">
-        <div className="w-3/4">
-          <div className="h-[1px] bg-gradient-to-r from-transparent via-violet-500 to-transparent w-full" />
-        </div>
-      </div>
-
-      <div className="flex justify-center mt-10 my-2 lg:py-6">
-        <div className="flex items-center">
-          <span className="text-[#00040f] dark:text-slate-300 text-center font-extrabold mb-10 max-sm:text-2xl p-2 px-8 text-5xl ml-[-90px]">
-            Education
-          </span>
-        </div>
-      </div>
-
-      <div
-        className="flex flex-col items-center mt-16 md:flex-row md:justify-center space-y-10 md:space-y-0 md:space-x-10"
-        data-aos="fade-up"
-      >
-        <div className="md:w-1/2" style={{ perspective: "1000px" }}>
-          <Lottie
-            animationData={bookc}
-            loop={true}
-            className="max-w-[300px] md:max-w-[400px] h-auto rounded-xl border border-[#00040f] lottie-3d-effect mb-10"
-          />
-        </div>
-
-        <div
-          className="flex flex-col gap-6 sm:gap-8 md:w-3/4 lg:w-1/2"
-          style={{ margin: "0 16px" }}
-        >
-          {Educations.map((education) => (
-            <GlowCard
-              key={education.id}
-              identifier={`education-${education.id}`}
-            >
-              <div>
-                <p className="text-xs sm:text-sm text-[#16f2b3] mt-4 text-center">
-                  {education.duration}
-                </p>
-              </div>
-              <div className="px-3 pr-2 py-4 relative text-white flex flex-col items-start gap-4">
-                <div className="flex items-center gap-4">
-                  {/* Bigger logo with responsive size */}
-                  <div className="flex-shrink-0">
-                    <img
-                      src={education.logo}
-                      alt={`${education.institution} logo`}
-                      className="w-32 h-32 md:w-48 md:h-48 object-contain rounded-xl shadow-md"
-                    />
-                  </div>
-
-                  <div className="flex flex-col text-left">
-                    <p className="text-lg sm:text-2xl mb-1 font-semibold uppercase text-left">
-                      {education.title}
-                    </p>
-                    <p className="text-sm sm:text-base text-left">
-                      {education.institution}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </GlowCard>
-          ))}
-        </div>
+            {/* Details below image */}
+            <div className="p-6 text-center">
+              <h3 className="text-xl font-semibold">{edu.title}</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                {edu.duration}
+              </p>
+              <p className="text-base font-medium mt-3">{edu.institution}</p>
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );
