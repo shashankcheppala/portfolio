@@ -5,9 +5,6 @@ export const skillsData = [
   "Python",
   "R",
   "SQL",
-  "JavaScript",
-  "HTML",
-  "CSS",
 
   // Data Science & ML Libraries
   "Pandas",
@@ -19,14 +16,12 @@ export const skillsData = [
   "Keras",
   "PyTorch",
   "Hugging Face Transformers",
-  "NLTK",
   "OpenCV",
 
   // Big Data & Cloud
   "Apache Spark",
   "Hadoop",
   "Kafka",
-  "Google Colab",
   "Jupyter Notebook",
   "Streamlit",
   "Docker",
@@ -43,13 +38,4 @@ export const skillsData = [
   // Software Tools & Version Control
   "Git",
   "GitHub",
-  "VS Code",
-
-  // Core Domains
-  "Machine Learning",
-  "Deep Learning",
-  "Natural Language Processing",
-  "Computer Vision",
-  "Data Visualization",
-  "Statistical Analysis",
 ];
