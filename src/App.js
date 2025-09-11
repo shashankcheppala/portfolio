@@ -1,14 +1,15 @@
-import { useState, useEffect } from "react";
 import HashLoader from "react-spinners/HashLoader";
-
+import { useState, useEffect } from "react";
 import NavBar from "./components/NavBar";
-import Home from "./components/Home";
-import About from "./components/About";
-import Experinces from "./components/Experinces";
 import Skills from "./components/Skills";
 import Project from "./components/Project";
+import { BrowserRouter as Router } from "react-router-dom";
+import Home from "./components/Home";
+import About from "./components/About";
 import Education from "./components/Education";
 import Contact from "./components/Contact";
+import Experinces from "./components/Experinces";
+import Medium from "./components/Medium";  // <-- NEW import
 
 const override = {
   display: "flex",
@@ -23,11 +24,9 @@ const App = () => {
 
   useEffect(() => {
     setLoading(true);
-    const timer = setTimeout(() => {
+    setTimeout(() => {
       setLoading(false);
     }, 3000);
-
-    return () => clearTimeout(timer); // cleanup
   }, []);
 
   return (
@@ -45,14 +44,17 @@ const App = () => {
         </div>
       ) : (
         <div>
-          <NavBar />
-          <Home />
-          <About />
-          <Experinces />
-          <Skills />
-          <Project />
-          <Education />
-          <Contact />
+          <div>
+            <NavBar />
+            <Home />
+            <About />
+            <Experinces />
+            <Skills />
+            <Project />
+            <Medium />   {/* <-- NEW Medium section */}
+            <Education />
+            <Contact />
+          </div>
         </div>
       )}
     </>

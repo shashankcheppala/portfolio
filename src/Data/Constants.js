@@ -1,28 +1,20 @@
 // src/Data/Constants.js
-
 export const Data = {
   name: "Shashank Cheppala",
-  phone: "+1 (217)-220-4643", // update if you want your US number
+  phone: "+1 (000) 000-0000", // update with your actual number
   roles: [
-    "Data Analytics",
-    "NLP & Computer Vision",
-    "Machine Learning",
+    "Data Analytics Student",
+    "Machine Learning Enthusiast",
+    "Python Developer",
   ],
-  email: "notedevelopment@gmail.com",
+  email: "your-email@example.com", // update with your actual email
   github: "https://github.com/shashankcheppala",
-  linkedin: "https://linkedin.com/in/shashankcheppala", // fix key casing
-  leetcode: "", // add if you want to show it
-  resume: "/Resume.pdf", // make sure Resume.pdf is in /public
-  description: `
-    I'm a graduate student in Data Analytics at the University of Illinois Springfield,
-    focused on NLP, computer vision, and end-to-end ML systems. I enjoy building
-    clean pipelines, explainable models, and intuitive user-facing tools.
+  linkedIn: "https://linkedin.com/in/shashankcheppala",
+  leetcode: "", // optional
+  resume: "", // add your resume link if hosted
+  description: `I am Shashank Cheppala, a motivated Master's student in Data Analytics with hands-on experience in data science, machine learning, and analytics tools. Passionate about solving real-world problems with data-driven approaches, I combine technical expertise with creativity to deliver impactful insights and solutions.`,
 
-    My academic and project work includes Fake News Detection using LLMs & Deep Learning,
-    and Emotion-Aware Hybrid Deepfake Detection. Alongside ML, I bring strong skills in
-    Python, SQL, PyTorch, TensorFlow, Hugging Face, Spark, Tableau, and Power BI.
-
-    Recognized for problem-solving, technical writing, and leadership, I'm eager to apply
-    my skills to real-world data challenges and collaborative innovation.
-  `,
+  // --- NEW Medium fields ---
+  mediumUser: "shashankcheppala", // your Medium handle (no @)
+  mediumUrl: "https://medium.com/@shashankcheppala",
 };
