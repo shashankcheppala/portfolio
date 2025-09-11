@@ -64,7 +64,7 @@ export default function Medium() {
     const load = async () => {
       const cached = readCache();
       if (cached && mounted) {
-        setPosts(cached.slice(0, 2)); // only 2 latest
+        setPosts(cached.slice(0, 3)); // <-- show 3 latest from cache
         setState({ loading: false, error: "" });
       }
 
@@ -77,12 +77,12 @@ export default function Medium() {
 
         const items = (data.items || [])
           .filter((it) => it.categories?.length)
-          .slice(0, 2); // only 2 latest
+          .slice(0, 3); // <-- show 3 latest from network
 
         if (mounted) {
           setPosts(items);
           setState({ loading: false, error: "" });
-          writeCache(items); // cache just what we render
+          writeCache(items); // cache what we render
         }
       } catch {
         if (!cached && mounted) {
@@ -118,9 +118,9 @@ export default function Medium() {
         </span>
       </div>
 
-      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2">
+      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {state.loading &&
-          Array.from({ length: 2 }).map((_, i) => (
+          Array.from({ length: 3 }).map((_, i) => ( // <-- 3 skeletons
             <div key={i} className="rounded-lg border border-[#353a52] p-5 animate-pulse">
               <div className="w-full h-40 bg-[#1b2242] rounded mb-4" />
               <div className="h-4 w-3/4 bg-[#1b2242] rounded mb-2" />
@@ -129,7 +129,7 @@ export default function Medium() {
           ))}
 
         {!state.loading && state.error && (
-          <div className="sm:col-span-2 text-center text-sm text-red-400">
+          <div className="sm:col-span-2 lg:col-span-3 text-center text-sm text-red-400">
             {state.error}
           </div>
         )}
