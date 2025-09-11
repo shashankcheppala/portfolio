@@ -64,7 +64,7 @@ export default function Medium() {
     const load = async () => {
       const cached = readCache();
       if (cached && mounted) {
-        setPosts(cached.slice(0, 3)); // <-- show 3 latest from cache
+        setPosts(cached.slice(0, 3));
         setState({ loading: false, error: "" });
       }
 
@@ -77,12 +77,12 @@ export default function Medium() {
 
         const items = (data.items || [])
           .filter((it) => it.categories?.length)
-          .slice(0, 3); // <-- show 3 latest from network
+          .slice(0, 3);
 
         if (mounted) {
           setPosts(items);
           setState({ loading: false, error: "" });
-          writeCache(items); // cache what we render
+          writeCache(items);
         }
       } catch {
         if (!cached && mounted) {
@@ -103,89 +103,88 @@ export default function Medium() {
   return (
     <section
       id="medium"
-      className="max-w-screen-lg mx-auto relative z-50 border-t my-12 lg:my-24 border-[#25213b] px-5"
+      className="min-h-screen flex items-center justify-center px-5 md:px-10"
     >
-      {/* Divider line */}
-      <div className="flex justify-center -translate-y-[1px]">
-        <div className="w-3/4">
-          <div className="h-[1px] bg-gradient-to-r from-transparent via-violet-500 to-transparent w-full" />
-        </div>
-      </div>
-
-      <div className="flex justify-center mt-10 mb-8">
-        <span className="text-[#00040f] dark:text-slate-300 font-extrabold text-4xl md:text-5xl">
+      <div className="w-full max-w-screen-xl flex flex-col items-center">
+        {/* Title */}
+        <h2 className="text-4xl md:text-5xl font-extrabold text-[#00040f] dark:text-slate-200 mb-10 text-center">
           My Medium Articles
-        </span>
-      </div>
+        </h2>
 
-      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        {state.loading &&
-          Array.from({ length: 3 }).map((_, i) => ( // <-- 3 skeletons
-            <div key={i} className="rounded-lg border border-[#353a52] p-5 animate-pulse">
-              <div className="w-full h-40 bg-[#1b2242] rounded mb-4" />
-              <div className="h-4 w-3/4 bg-[#1b2242] rounded mb-2" />
-              <div className="h-3 w-1/2 bg-[#1b2242] rounded" />
-            </div>
-          ))}
-
-        {!state.loading && state.error && (
-          <div className="sm:col-span-2 lg:col-span-3 text-center text-sm text-red-400">
-            {state.error}
-          </div>
-        )}
-
-        {!state.loading &&
-          !state.error &&
-          posts.map((post) => {
-            const thumb = getThumbnail(post);
-            return (
+        {/* Grid: single page layout */}
+        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full">
+          {state.loading &&
+            Array.from({ length: 3 }).map((_, i) => (
               <div
-                key={post.guid}
-                className="bg-[#e1e1e1] dark:bg-transparent rounded-lg border border-[#353a52] hover:border-violet-500 transition-all duration-300 p-5 button-animation"
+                key={i}
+                className="rounded-xl border border-[#353a52] p-5 animate-pulse bg-[#e1e1e1] dark:bg-transparent"
               >
-                <img
-                  src={thumb}
-                  alt={post.title}
-                  className="w-full h-40 object-cover rounded-md mb-4"
-                  loading="lazy"
-                  referrerPolicy="no-referrer"
-                />
-                <h3 className="font-bold text-lg text-[#00040f] dark:text-slate-200 mb-2 line-clamp-2">
-                  {post.title}
-                </h3>
-                <p className="text-xs text-slate-600 dark:text-slate-400">
-                  {new Date(post.pubDate).toLocaleDateString()}
-                </p>
-                <p
-                  className="text-sm text-gray-700 dark:text-gray-300 mt-2 line-clamp-3"
-                  dangerouslySetInnerHTML={{
-                    __html:
-                      post.description.replace(/<[^>]+>/g, "").slice(0, 140) + "…",
-                  }}
-                />
+                <div className="w-full h-44 bg-[#1b2242] dark:bg-white/10 rounded mb-4" />
+                <div className="h-5 w-3/4 bg-[#1b2242] dark:bg-white/10 rounded mb-2" />
+                <div className="h-4 w-1/2 bg-[#1b2242] dark:bg-white/10 rounded" />
+              </div>
+            ))}
+
+          {!state.loading && state.error && (
+            <div className="lg:col-span-3 text-center text-sm text-red-400">
+              {state.error}
+            </div>
+          )}
+
+          {!state.loading &&
+            !state.error &&
+            posts.map((post) => {
+              const thumb = getThumbnail(post);
+              return (
                 <a
+                  key={post.guid}
                   href={`${post.link}?utm_source=portfolio&utm_medium=medium_section`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-4 inline-block bg-gradient-to-r from-pink-500 to-pink-600 text-white py-2 px-4 rounded-md"
+                  className="group rounded-2xl overflow-hidden bg-white dark:bg-[#0b0b0b] border border-gray-200/70 dark:border-white/10 shadow-md hover:shadow-xl transition-all"
                 >
-                  Open Article
-                </a>
-              </div>
-            );
-          })}
-      </div>
+                  {/* Image header */}
+                  <div className="relative h-44 w-full overflow-hidden">
+                    <img
+                      src={thumb}
+                      alt={post.title}
+                      className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent" />
+                    <div className="absolute bottom-0 p-4">
+                      <h3 className="text-white text-lg md:text-xl font-bold leading-snug line-clamp-2">
+                        {post.title}
+                      </h3>
+                      <p className="text-gray-200/90 text-xs mt-1">
+                        {new Date(post.pubDate).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
 
-      {/* Section footer: Read more -> your profile */}
-      <div className="flex justify-center mt-8">
-        <a
-          href={`${PROFILE_URL}?utm_source=portfolio&utm_medium=section_cta`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-block bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2 px-5 rounded-md hover:scale-105 transition-transform"
-        >
-          Read more on Medium →
-        </a>
+                  {/* Body */}
+                  <div className="p-5">
+                    <p className="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed line-clamp-3">
+                      {post.description.replace(/<[^>]+>/g, "").slice(0, 170)}…
+                    </p>
+                  </div>
+                </a>
+              );
+            })}
+        </div>
+
+        {/* CTA */}
+        <div className="mt-10">
+          <a
+            href={`${PROFILE_URL}?utm_source=portfolio&utm_medium=section_cta`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block px-6 py-3 rounded-md bg-gradient-to-r from-pink-500 to-pink-600 text-white font-semibold transition-transform hover:scale-105"
+          >
+            Read more on Medium →
+          </a>
+        </div>
       </div>
     </section>
   );
