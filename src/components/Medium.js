@@ -2,39 +2,36 @@
 import React, { useEffect, useState } from "react";
 
 const RSS2JSON = "https://api.rss2json.com/v1/api.json?rss_url=";
-const CACHE_KEY = "medium_posts_cache_v1";
+const CACHE_KEY = "medium_posts_cache_v2";
 const TTL_MS = 30 * 60 * 1000; // 30 minutes
 
-const MEDIUM_USER = "shashankcheppala"; // your Medium handle (no @)
+const MEDIUM_USER = "shashankcheppala"; // no @
 const FEED_URL = `https://medium.com/feed/@${MEDIUM_USER}`;
 const PROFILE_URL = `https://medium.com/@${MEDIUM_USER}`;
 
-// simple placeholder (swap for an image in /public if you like)
+// simple placeholder (optional: swap to /public/medium-placeholder.jpg)
 const PLACEHOLDER =
   "data:image/svg+xml;charset=UTF-8," +
   encodeURIComponent(
-    `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='400'>
+    `<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630'>
       <rect width='100%' height='100%' fill='#0b0f24'/>
       <text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle'
-            fill='#b7c0d8' font-family='Arial' font-size='22'>
+            fill='#b7c0d8' font-family='Arial' font-size='28'>
         Medium article
       </text>
     </svg>`
   );
 
-function extractFirstImg(html = "") {
-  const match = html.match(/<img[^>]+src=["']([^"']+)["']/i);
-  return match ? match[1] : null;
-}
+const extractFirstImg = (html = "") => {
+  const m = html.match(/<img[^>]+src=["']([^"']+)["']/i);
+  return m ? m[1] : null;
+};
 
-function getThumbnail(post) {
-  if (post.thumbnail) return post.thumbnail;
-  const fromContent = extractFirstImg(post.content);
-  if (fromContent) return fromContent;
-  const fromDesc = extractFirstImg(post.description);
-  if (fromDesc) return fromDesc;
-  return PLACEHOLDER;
-}
+const getThumb = (post) =>
+  post.thumbnail ||
+  extractFirstImg(post.content) ||
+  extractFirstImg(post.description) ||
+  PLACEHOLDER;
 
 export default function Medium() {
   const [posts, setPosts] = useState([]);
@@ -88,7 +85,7 @@ export default function Medium() {
         if (!cached && mounted) {
           setState({
             loading: false,
-            error: "Couldn't load Medium posts right now. Please try again later.",
+            error: "Couldn't load Medium posts right now.",
           });
         }
       }
@@ -103,30 +100,35 @@ export default function Medium() {
   return (
     <section
       id="medium"
-      className="min-h-screen flex items-center justify-center px-5 md:px-10"
+      className="
+        min-h-screen
+        flex flex-col justify-center
+        px-5 md:px-10
+        scroll-mt-24
+      "
     >
-      <div className="w-full max-w-screen-xl flex flex-col items-center">
-        {/* Title */}
-        <h2 className="text-4xl md:text-5xl font-extrabold text-[#00040f] dark:text-slate-200 mb-10 text-center">
-          My Medium Articles
-        </h2>
+      {/* Title */}
+      <h2 className="text-4xl md:text-5xl font-extrabold text-[#00040f] dark:text-slate-200 mb-10 text-center">
+        My Medium Articles
+      </h2>
 
-        {/* Grid: single page layout */}
-        <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full">
+      {/* Grid */}
+      <div className="w-full max-w-screen-xl mx-auto">
+        <div className="grid gap-6 sm:gap-8 grid-cols-1 md:grid-cols-3">
           {state.loading &&
             Array.from({ length: 3 }).map((_, i) => (
               <div
                 key={i}
-                className="rounded-xl border border-[#353a52] p-5 animate-pulse bg-[#e1e1e1] dark:bg-transparent"
+                className="rounded-2xl border border-[#353a52]/50 dark:border-white/10 p-5 bg-white/60 dark:bg-white/5 backdrop-blur-sm animate-pulse"
               >
-                <div className="w-full h-44 bg-[#1b2242] dark:bg-white/10 rounded mb-4" />
-                <div className="h-5 w-3/4 bg-[#1b2242] dark:bg-white/10 rounded mb-2" />
-                <div className="h-4 w-1/2 bg-[#1b2242] dark:bg-white/10 rounded" />
+                <div className="w-full h-48 md:h-56 bg-[#1b2242]/30 rounded-lg mb-4" />
+                <div className="h-4 w-3/4 bg-[#1b2242]/30 rounded mb-2" />
+                <div className="h-3 w-1/2 bg-[#1b2242]/30 rounded" />
               </div>
             ))}
 
           {!state.loading && state.error && (
-            <div className="lg:col-span-3 text-center text-sm text-red-400">
+            <div className="md:col-span-3 text-center text-sm text-red-400">
               {state.error}
             </div>
           )}
@@ -134,53 +136,71 @@ export default function Medium() {
           {!state.loading &&
             !state.error &&
             posts.map((post) => {
-              const thumb = getThumbnail(post);
+              const thumb = getThumb(post);
               return (
-                <a
+                <article
                   key={post.guid}
-                  href={`${post.link}?utm_source=portfolio&utm_medium=medium_section`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group rounded-2xl overflow-hidden bg-white dark:bg-[#0b0b0b] border border-gray-200/70 dark:border-white/10 shadow-md hover:shadow-xl transition-all"
+                  className="
+                    group rounded-2xl overflow-hidden
+                    border border-[#353a52]/50 dark:border-white/10
+                    bg-white/70 dark:bg-white/5 backdrop-blur
+                    hover:border-violet-500/70 transition-all duration-300
+                    flex flex-col
+                  "
                 >
-                  {/* Image header */}
-                  <div className="relative h-44 w-full overflow-hidden">
+                  <div className="relative">
                     <img
                       src={thumb}
                       alt={post.title}
-                      className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-105"
+                      className="w-full h-48 md:h-56 object-cover"
                       loading="lazy"
                       referrerPolicy="no-referrer"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent" />
-                    <div className="absolute bottom-0 p-4">
-                      <h3 className="text-white text-lg md:text-xl font-bold leading-snug line-clamp-2">
-                        {post.title}
-                      </h3>
-                      <p className="text-gray-200/90 text-xs mt-1">
-                        {new Date(post.pubDate).toLocaleDateString()}
-                      </p>
-                    </div>
                   </div>
 
-                  {/* Body */}
-                  <div className="p-5">
-                    <p className="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed line-clamp-3">
-                      {post.description.replace(/<[^>]+>/g, "").slice(0, 170)}…
+                  <div className="p-5 flex-1 flex flex-col">
+                    <h3 className="font-extrabold text-lg md:text-xl text-[#0d1224] dark:text-slate-100 mb-2 leading-snug">
+                      {post.title}
+                    </h3>
+
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
+                      {new Date(post.pubDate).toLocaleDateString()}
                     </p>
+
+                    <p
+                      className="text-sm text-gray-700 dark:text-gray-300 line-clamp-3"
+                      dangerouslySetInnerHTML={{
+                        __html:
+                          post.description.replace(/<[^>]+>/g, "").slice(0, 160) +
+                          "…",
+                      }}
+                    />
+
+                    <div className="mt-5">
+                      <a
+                        href={`${post.link}?utm_source=portfolio&utm_medium=medium_section`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center w-full py-2.5 rounded-lg
+                                   bg-gradient-to-r from-pink-500 to-pink-600 text-white
+                                   font-medium hover:scale-[1.02] active:scale-[0.99] transition-transform"
+                      >
+                        Open Article
+                      </a>
+                    </div>
                   </div>
-                </a>
+                </article>
               );
             })}
         </div>
 
-        {/* CTA */}
-        <div className="mt-10">
+        {/* Footer CTA */}
+        <div className="flex justify-center mt-8">
           <a
             href={`${PROFILE_URL}?utm_source=portfolio&utm_medium=section_cta`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-block px-6 py-3 rounded-md bg-gradient-to-r from-pink-500 to-pink-600 text-white font-semibold transition-transform hover:scale-105"
+            className="inline-block bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2.5 px-5 rounded-lg hover:scale-105 transition-transform"
           >
             Read more on Medium →
           </a>
