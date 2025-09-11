@@ -1,24 +1,28 @@
 {
   "files": {
     "main.css": "/static/css/main.41c156d4.css",
-    "main.js": "/static/js/main.88b5edf4.js",
+    "main.js": "/static/js/main.fc2c1824.js",
     "static/js/453.e26bd268.chunk.js": "/static/js/453.e26bd268.chunk.js",
-    "static/media/fakenews1.png": "/static/media/fakenews1.f17179a1605f3bf519a6.png",
-    "static/media/fakenews2.png": "/static/media/fakenews2.a53bb3dbf53dd5557d10.png",
+    "static/media/incentive1.png": "/static/media/incentive1.045e453d6d83a595d70d.png",
+    "static/media/fakenews1.png": "/static/media/fakenews1.8677555855c635e91f3f.png",
     "static/media/tkr.png": "/static/media/tkr.cc7224f0f03394e4b2ee.png",
     "static/media/seaborn.png": "/static/media/seaborn.a914edec1a7859d1ed8b.png",
     "static/media/tensorflow.png": "/static/media/tensorflow.4e81c8c300d9976eca35.png",
     "static/media/pytorch.png": "/static/media/pytorch.00ccb7fdd39cea59c643.png",
-    "static/media/deepfake2.png": "/static/media/deepfake2.b56c62fbc88829cd51c3.png",
+    "static/media/pricing1.png": "/static/media/pricing1.747c06f9c5f1f97be754.png",
     "static/media/uis.png": "/static/media/uis.87ecb2c11079b0b6df00.png",
     "static/media/dbms1.png": "/static/media/dbms1.4f5dcb82dcbb19759956.png",
+    "static/media/incentive2.png": "/static/media/incentive2.27ae9fc96ec880c76151.png",
     "static/media/postgreSql.png": "/static/media/postgreSql.8caff9901d44958dae9c.png",
-    "static/media/deepfake1.png": "/static/media/deepfake1.d6cbd72200f9c26466e0.png",
     "static/media/keras.png": "/static/media/keras.73df274494d5ceb169fc.png",
+    "static/media/deepfake1.png": "/static/media/deepfake1.fe817682ce7c241e7676.png",
     "static/media/hadoop.png": "/static/media/hadoop.c4783e4cf9d5585c8867.png",
+    "static/media/deepfake2.png": "/static/media/deepfake2.59432282be6ee4618d5d.png",
     "static/media/react.png": "/static/media/react.ba44564b8a24bf00370e.png",
+    "static/media/pricing2.png": "/static/media/pricing2.ee34fa82c25681300a43.png",
     "static/media/excel.png": "/static/media/excel.2971241aa22d32ae670c.png",
     "static/media/CPP.png": "/static/media/CPP.24a8f93854ab092f17a7.png",
+    "static/media/fakenews2.png": "/static/media/fakenews2.b8a72eb1a07fe57dd1b4.png",
     "static/media/C.png": "/static/media/C.d083731589e745941c43.png",
     "static/media/java.png": "/static/media/java.5a2ff6998abca520171f.png",
     "static/media/postman.png": "/static/media/postman.112dcb6f03a8d457200c.png",
@@ -49,11 +53,11 @@
     "static/media/slick.woff": "/static/media/slick.295183786cd8a1389865.woff",
     "index.html": "/index.html",
     "main.41c156d4.css.map": "/static/css/main.41c156d4.css.map",
-    "main.88b5edf4.js.map": "/static/js/main.88b5edf4.js.map",
+    "main.fc2c1824.js.map": "/static/js/main.fc2c1824.js.map",
     "453.e26bd268.chunk.js.map": "/static/js/453.e26bd268.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.41c156d4.css",
-    "static/js/main.88b5edf4.js"
+    "static/js/main.fc2c1824.js"
   ]
 }
