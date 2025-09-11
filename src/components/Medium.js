@@ -1,177 +1,192 @@
 // src/components/Medium.js
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 
-const MEDIUM_USERNAME = "shashankcheppala";
-const RSS2JSON = `https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@${MEDIUM_USERNAME}`;
+const RSS2JSON = "https://api.rss2json.com/v1/api.json?rss_url=";
+const CACHE_KEY = "medium_posts_cache_v1";
+const TTL_MS = 30 * 60 * 1000; // 30 minutes
 
-// Some Medium images block hotlinking. This proxy helps them render reliably.
-const viaProxy = (url) => {
-  try {
-    if (!url) return "";
-    const stripped = url.replace(/^https?:\/\//i, "");
-    return `https://images.weserv.nl/?url=${encodeURIComponent(stripped)}`;
-  } catch {
-    return url;
-  }
-};
+const MEDIUM_USER = "shashankcheppala"; // your Medium handle (no @)
+const FEED_URL = `https://medium.com/feed/@${MEDIUM_USER}`;
+const PROFILE_URL = `https://medium.com/@${MEDIUM_USER}`;
 
-// Try hard to find a good cover image
-const extractImageUrl = (post) => {
-  // 1) thumbnail
-  if (post?.thumbnail) return viaProxy(post.thumbnail);
+// simple placeholder (swap for an image in /public if you like)
+const PLACEHOLDER =
+  "data:image/svg+xml;charset=UTF-8," +
+  encodeURIComponent(
+    `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='400'>
+      <rect width='100%' height='100%' fill='#0b0f24'/>
+      <text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle'
+            fill='#b7c0d8' font-family='Arial' font-size='22'>
+        Medium article
+      </text>
+    </svg>`
+  );
 
-  // 2) enclosure
-  if (post?.enclosure?.link) return viaProxy(post.enclosure.link);
-
-  // 3) first <img> from content / description
-  const html = post?.content || post?.description || "";
+function extractFirstImg(html = "") {
   const match = html.match(/<img[^>]+src=["']([^"']+)["']/i);
-  if (match && match[1]) return viaProxy(match[1]);
+  return match ? match[1] : null;
+}
 
-  // fallback
-  return "https://via.placeholder.com/1200x630?text=Medium+Post";
-};
+function getThumbnail(post) {
+  if (post.thumbnail) return post.thumbnail;
+  const fromContent = extractFirstImg(post.content);
+  if (fromContent) return fromContent;
+  const fromDesc = extractFirstImg(post.description);
+  if (fromDesc) return fromDesc;
+  return PLACEHOLDER;
+}
 
-// Strip HTML and squeeze the text
-const toPlainText = (html, max = 180) => {
-  if (!html) return "";
-  const text = html.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
-  return text.length > max ? text.slice(0, max) + "..." : text;
-};
-
-// Skeleton card while loading
-const CardSkeleton = () => (
-  <div className="rounded-2xl overflow-hidden bg-white dark:bg-[#0b0b0b] border border-gray-200/70 dark:border-white/10 shadow-md animate-pulse">
-    <div className="h-48 bg-gray-200/70 dark:bg-white/5" />
-    <div className="p-5">
-      <div className="h-6 w-2/3 bg-gray-200/70 dark:bg-white/5 rounded mb-3" />
-      <div className="h-4 w-1/3 bg-gray-200/70 dark:bg-white/5 rounded mb-4" />
-      <div className="h-4 w-full bg-gray-200/70 dark:bg-white/5 rounded mb-2" />
-      <div className="h-4 w-5/6 bg-gray-200/70 dark:bg-white/5 rounded" />
-    </div>
-  </div>
-);
-
-const Medium = () => {
-  const [articles, setArticles] = useState(null);
-  const [error, setError] = useState("");
+export default function Medium() {
+  const [posts, setPosts] = useState([]);
+  const [state, setState] = useState({ loading: true, error: "" });
 
   useEffect(() => {
-    let cancelled = false;
+    let mounted = true;
 
-    fetch(RSS2JSON)
-      .then((res) => res.json())
-      .then((data) => {
-        if (cancelled) return;
-        if (!data?.items) {
-          setError("No posts found.");
-          setArticles([]);
-          return;
-        }
-        // latest 2
-        setArticles(data.items.slice(0, 2));
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setError("Could not load Medium posts.");
-          setArticles([]);
-        }
-      });
+    const readCache = () => {
+      try {
+        const raw = localStorage.getItem(CACHE_KEY);
+        if (!raw) return null;
+        const { t, items } = JSON.parse(raw);
+        if (Date.now() - t > TTL_MS) return null;
+        return items;
+      } catch {
+        return null;
+      }
+    };
 
+    const writeCache = (items) => {
+      try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), items }));
+      } catch {}
+    };
+
+    const load = async () => {
+      const cached = readCache();
+      if (cached && mounted) {
+        setPosts(cached.slice(0, 2)); // only 2 latest
+        setState({ loading: false, error: "" });
+      }
+
+      try {
+        const res = await fetch(`${RSS2JSON}${encodeURIComponent(FEED_URL)}`, {
+          cache: "no-store",
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+
+        const items = (data.items || [])
+          .filter((it) => it.categories?.length)
+          .slice(0, 2); // only 2 latest
+
+        if (mounted) {
+          setPosts(items);
+          setState({ loading: false, error: "" });
+          writeCache(items); // cache just what we render
+        }
+      } catch {
+        if (!cached && mounted) {
+          setState({
+            loading: false,
+            error: "Couldn't load Medium posts right now. Please try again later.",
+          });
+        }
+      }
+    };
+
+    load();
     return () => {
-      cancelled = true;
+      mounted = false;
     };
   }, []);
-
-  const cards = useMemo(() => {
-    if (!articles) return [];
-    return articles.map((post) => {
-      const cover = extractImageUrl(post);
-      const title = post.title || "Untitled";
-      const date = post.pubDate ? new Date(post.pubDate).toDateString() : "";
-      const excerpt = toPlainText(post.description || post.content, 180);
-      const link = post.link || `https://medium.com/@${MEDIUM_USERNAME}`;
-
-      return { cover, title, date, excerpt, link, guid: post.guid || title };
-    });
-  }, [articles]);
 
   return (
     <section
       id="medium"
-      className="min-h-screen flex items-center justify-center px-5 md:px-10 overflow-hidden"
+      className="max-w-screen-lg mx-auto relative z-50 border-t my-12 lg:my-24 border-[#25213b] px-5"
     >
-      <div className="w-full max-w-screen-xl flex flex-col items-center">
-        {/* Title */}
-        <h2 className="text-4xl md:text-5xl font-extrabold text-[#00040f] dark:text-slate-200 mb-10 text-center">
-          Latest from Medium
-        </h2>
-
-        {/* Grid */}
-        {articles === null ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
-            <CardSkeleton />
-            <CardSkeleton />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
-            {cards.map(({ cover, title, date, excerpt, link, guid }) => (
-              <a
-                key={guid}
-                href={link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group rounded-2xl overflow-hidden bg-white dark:bg-[#0b0b0b] border border-gray-200/70 dark:border-white/10 shadow-md hover:shadow-xl transition-all"
-              >
-                {/* Image header with gradient overlay and title/date */}
-                <div className="relative h-56 w-full overflow-hidden">
-                  <div
-                    className="absolute inset-0 bg-center bg-cover transform transition-transform duration-500 group-hover:scale-105"
-                    style={{ backgroundImage: `url('${cover}')` }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                  <div className="absolute bottom-0 p-4">
-                    <h3 className="text-white text-xl md:text-2xl font-bold leading-snug">
-                      {title}
-                    </h3>
-                    {date && (
-                      <p className="text-gray-200/90 text-xs md:text-sm mt-1">
-                        {date}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Body */}
-                <div className="p-5">
-                  <p className="text-sm md:text-base text-gray-700 dark:text-gray-300 leading-relaxed">
-                    {excerpt}
-                  </p>
-                </div>
-              </a>
-            ))}
-          </div>
-        )}
-
-        {/* Error (if any) */}
-        {error && (
-          <p className="mt-6 text-sm text-red-500 text-center">{error}</p>
-        )}
-
-        {/* Read more */}
-        <div className="mt-10">
-          <a
-            href={`https://medium.com/@${MEDIUM_USERNAME}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-6 py-3 rounded-md bg-gradient-to-r from-pink-500 to-pink-600 text-white font-semibold transition-transform hover:scale-105"
-          >
-            Read more on Medium →
-          </a>
+      {/* Divider line */}
+      <div className="flex justify-center -translate-y-[1px]">
+        <div className="w-3/4">
+          <div className="h-[1px] bg-gradient-to-r from-transparent via-violet-500 to-transparent w-full" />
         </div>
+      </div>
+
+      <div className="flex justify-center mt-10 mb-8">
+        <span className="text-[#00040f] dark:text-slate-300 font-extrabold text-4xl md:text-5xl">
+          My Medium Articles
+        </span>
+      </div>
+
+      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2">
+        {state.loading &&
+          Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="rounded-lg border border-[#353a52] p-5 animate-pulse">
+              <div className="w-full h-40 bg-[#1b2242] rounded mb-4" />
+              <div className="h-4 w-3/4 bg-[#1b2242] rounded mb-2" />
+              <div className="h-3 w-1/2 bg-[#1b2242] rounded" />
+            </div>
+          ))}
+
+        {!state.loading && state.error && (
+          <div className="sm:col-span-2 text-center text-sm text-red-400">
+            {state.error}
+          </div>
+        )}
+
+        {!state.loading &&
+          !state.error &&
+          posts.map((post) => {
+            const thumb = getThumbnail(post);
+            return (
+              <div
+                key={post.guid}
+                className="bg-[#e1e1e1] dark:bg-transparent rounded-lg border border-[#353a52] hover:border-violet-500 transition-all duration-300 p-5 button-animation"
+              >
+                <img
+                  src={thumb}
+                  alt={post.title}
+                  className="w-full h-40 object-cover rounded-md mb-4"
+                  loading="lazy"
+                  referrerPolicy="no-referrer"
+                />
+                <h3 className="font-bold text-lg text-[#00040f] dark:text-slate-200 mb-2 line-clamp-2">
+                  {post.title}
+                </h3>
+                <p className="text-xs text-slate-600 dark:text-slate-400">
+                  {new Date(post.pubDate).toLocaleDateString()}
+                </p>
+                <p
+                  className="text-sm text-gray-700 dark:text-gray-300 mt-2 line-clamp-3"
+                  dangerouslySetInnerHTML={{
+                    __html:
+                      post.description.replace(/<[^>]+>/g, "").slice(0, 140) + "…",
+                  }}
+                />
+                <a
+                  href={`${post.link}?utm_source=portfolio&utm_medium=medium_section`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-4 inline-block bg-gradient-to-r from-pink-500 to-pink-600 text-white py-2 px-4 rounded-md"
+                >
+                  Open Article
+                </a>
+              </div>
+            );
+          })}
+      </div>
+
+      {/* Section footer: Read more -> your profile */}
+      <div className="flex justify-center mt-8">
+        <a
+          href={`${PROFILE_URL}?utm_source=portfolio&utm_medium=section_cta`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2 px-5 rounded-md hover:scale-105 transition-transform"
+        >
+          Read more on Medium →
+        </a>
       </div>
     </section>
   );
-};
-
-export default Medium;
+}
