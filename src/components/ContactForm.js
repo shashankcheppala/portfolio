@@ -9,7 +9,6 @@ export default function ContactForm() {
     >
       <div className="flex justify-center mb-10">
         <span className="text-[#00040f] dark:text-slate-300 font-extrabold text-4xl md:text-5xl">
-          Contact
         </span>
       </div>
 
