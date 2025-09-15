@@ -3,8 +3,9 @@ import React, { useEffect } from "react";
 import { Educations } from "../Data/Education";
 import AOS from "aos";
 import "aos/dist/aos.css";
+import SectionTitle from "./SectionTitle";
 
-export default function Education() {
+const Education = () => {
   useEffect(() => {
     AOS.init();
   }, []);
@@ -12,45 +13,52 @@ export default function Education() {
   return (
     <section
       id="education"
-      className="min-h-screen flex flex-col justify-center items-center px-5 md:px-10"
+      className="max-w-screen-lg mx-auto relative z-50 overflow-hidden min-h-screen flex flex-col justify-center"
       data-aos="fade-up"
     >
       {/* Title */}
-      <h2 className="text-4xl md:text-5xl font-extrabold text-[#00040f] dark:text-slate-200 mb-12 text-center">
-        Education
-      </h2>
+      <div className="flex justify-center mt-10 my-2 lg:py-6">
+        <SectionTitle>Education</SectionTitle>
+      </div>
 
-      {/* Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 w-full max-w-screen-xl">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-10 px-6">
         {Educations.map((edu) => (
           <div
             key={edu.id}
-            className="bg-white dark:bg-[#0b0b0b] border border-gray-200/70 dark:border-white/10 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all"
+            className="bg-white dark:bg-[#0b0f24] shadow-lg rounded-xl p-6 border border-gray-200 dark:border-[#1f2937] hover:shadow-2xl transition-all duration-300"
           >
-            {/* Big Image */}
-            <div className="h-64 md:h-80 w-full overflow-hidden">
-              <img
-                src={edu.logo}
-                alt={edu.title}
-                className="w-full h-full object-cover transform transition-transform duration-500 hover:scale-105"
-              />
+            <div className="relative w-full h-64 md:h-72 lg:h-80 mb-6 rounded-lg overflow-hidden">
+              {edu.videoId ? (
+                <iframe
+                  className="w-full h-full rounded-lg"
+                  src={`https://www.youtube.com/embed/${edu.videoId}?autoplay=1&mute=1&loop=1&playlist=${edu.videoId}&controls=0&modestbranding=1&rel=0`}
+                  title={edu.title}
+                  frameBorder="0"
+                  allow="autoplay; encrypted-media"
+                  allowFullScreen
+                />
+              ) : (
+                <img
+                  src={edu.logo}
+                  alt={edu.institution}
+                  className="w-full h-full object-cover rounded-lg"
+                />
+              )}
             </div>
-
-            {/* Text */}
-            <div className="p-6 text-center">
-              <p className="text-[#16f2b3] text-sm md:text-base font-medium">
-                {edu.duration}
-              </p>
-              <h3 className="text-xl md:text-2xl font-semibold text-[#00040f] dark:text-slate-200 mt-2">
-                {edu.title}
-              </h3>
-              <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 mt-2">
-                {edu.institution}
-              </p>
-            </div>
+            <h3 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-slate-200 mb-2 text-center">
+              {edu.title}
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-slate-400 text-center mb-1">
+              {edu.duration}
+            </p>
+            <p className="text-base font-medium text-gray-800 dark:text-slate-300 text-center">
+              {edu.institution}
+            </p>
           </div>
         ))}
       </div>
     </section>
   );
-}
+};
+
+export default Education;
