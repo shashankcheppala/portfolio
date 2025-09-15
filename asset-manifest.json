@@ -1,16 +1,14 @@
 {
   "files": {
-    "main.css": "/static/css/main.282023e6.css",
-    "main.js": "/static/js/main.54bf3722.js",
+    "main.css": "/static/css/main.1fd3a1fa.css",
+    "main.js": "/static/js/main.c48bb577.js",
     "static/js/453.e26bd268.chunk.js": "/static/js/453.e26bd268.chunk.js",
     "static/media/incentive1.png": "/static/media/incentive1.045e453d6d83a595d70d.png",
     "static/media/fakenews1.png": "/static/media/fakenews1.8677555855c635e91f3f.png",
-    "static/media/tkr.png": "/static/media/tkr.cc7224f0f03394e4b2ee.png",
     "static/media/seaborn.png": "/static/media/seaborn.a914edec1a7859d1ed8b.png",
     "static/media/tensorflow.png": "/static/media/tensorflow.4e81c8c300d9976eca35.png",
     "static/media/pytorch.png": "/static/media/pytorch.00ccb7fdd39cea59c643.png",
     "static/media/pricing1.png": "/static/media/pricing1.747c06f9c5f1f97be754.png",
-    "static/media/uis.png": "/static/media/uis.87ecb2c11079b0b6df00.png",
     "static/media/dbms1.png": "/static/media/dbms1.4f5dcb82dcbb19759956.png",
     "static/media/incentive2.png": "/static/media/incentive2.27ae9fc96ec880c76151.png",
     "static/media/postgreSql.png": "/static/media/postgreSql.8caff9901d44958dae9c.png",
@@ -52,12 +50,12 @@
     "static/media/slick.ttf": "/static/media/slick.c94f7671dcc99dce43e2.ttf",
     "static/media/slick.woff": "/static/media/slick.295183786cd8a1389865.woff",
     "index.html": "/index.html",
-    "main.282023e6.css.map": "/static/css/main.282023e6.css.map",
-    "main.54bf3722.js.map": "/static/js/main.54bf3722.js.map",
+    "main.1fd3a1fa.css.map": "/static/css/main.1fd3a1fa.css.map",
+    "main.c48bb577.js.map": "/static/js/main.c48bb577.js.map",
     "453.e26bd268.chunk.js.map": "/static/js/453.e26bd268.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.282023e6.css",
-    "static/js/main.54bf3722.js"
+    "static/css/main.1fd3a1fa.css",
+    "static/js/main.c48bb577.js"
   ]
 }
