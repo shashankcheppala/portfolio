@@ -1,114 +1,91 @@
-import React, { useEffect, useRef, useState } from "react";
+// src/components/Education.js
+import React, { useEffect, useRef } from "react";
 import { Educations } from "../Data/Education";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import SectionTitle from "./SectionTitle";
 
-const ytSrc = (id) =>
-  `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&modestbranding=1&rel=0&playsinline=1`;
-
-export default function Education() {
-  const [visibleMap, setVisibleMap] = useState({});
-  const refs = useRef({});
+const Education = () => {
+  const refs = useRef([]);
 
   useEffect(() => {
     AOS.init();
-  }, []);
 
-  // Load & autoplay video only when card is in view
-  useEffect(() => {
-    const io = new IntersectionObserver(
+    // Intersection Observer to autoplay when visible
+    const observer = new IntersectionObserver(
       (entries) => {
-        setVisibleMap((prev) => {
-          const next = { ...prev };
-          for (const e of entries) {
-            const id = e.target.getAttribute("data-edu-id");
-            if (e.isIntersecting && e.intersectionRatio >= 0.35) next[id] = true;
+        entries.forEach((entry) => {
+          const iframe = entry.target;
+          if (iframe && iframe.contentWindow) {
+            if (entry.isIntersecting) {
+              iframe.contentWindow.postMessage(
+                '{"event":"command","func":"playVideo","args":""}',
+                "*"
+              );
+            } else {
+              iframe.contentWindow.postMessage(
+                '{"event":"command","func":"pauseVideo","args":""}',
+                "*"
+              );
+            }
           }
-          return next;
         });
       },
-      { threshold: [0, 0.35, 0.75] }
+      { threshold: 0.5 }
     );
 
-    Educations.forEach((edu) => {
-      const el = refs.current[edu.id];
-      if (el) io.observe(el);
+    refs.current.forEach((iframe) => {
+      if (iframe) observer.observe(iframe);
     });
 
-    return () => io.disconnect();
+    return () => observer.disconnect();
   }, []);
 
   return (
     <section
       id="education"
-      className="max-w-screen-lg mx-auto relative z-50 overflow-hidden min-h-screen flex flex-col justify-center px-6 pt-16 md:pt-24 pb-24 md:pb-28 scroll-mt-24 md:scroll-mt-28"
+      className="w-full min-h-screen flex flex-col justify-center items-center px-4 py-16"
       data-aos="fade-up"
     >
-      <div className="flex justify-center">
-        <SectionTitle>Education</SectionTitle>
-      </div>
+      <h2 className="text-4xl md:text-5xl font-extrabold text-[#00040f] dark:text-slate-200 mb-12">
+        Education
+      </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mt-10">
-        {Educations.map((edu) => {
-          const visible = !!visibleMap[edu.id];
-
-          return (
-            <div
-              key={edu.id}
-              ref={(el) => (refs.current[edu.id] = el)}
-              data-edu-id={String(edu.id)}
-              className="rounded-xl bg-white/70 dark:bg-[#0b0f24]/60 shadow-lg hover:shadow-2xl transition-all duration-300 backdrop-blur border border-transparent"
-            >
-              {/* Media */}
-              <div className="relative w-full h-64 md:h-72 lg:h-80 overflow-hidden rounded-t-xl">
-                {edu.videoId ? (
-                  visible ? (
-                    <iframe
-                      className="w-full h-full"
-                      src={ytSrc(edu.videoId)}
-                      title={edu.title}
-                      frameBorder="0"
-                      allow="autoplay; encrypted-media"
-                      allowFullScreen
-                      loading="lazy"
-                    />
-                  ) : (
-                    // Placeholder before visible
-                    <div className="w-full h-full bg-[#0b0f24] flex items-center justify-center">
-                      <span className="text-slate-300 text-sm md:text-base opacity-80">
-                        {edu.institution}
-                      </span>
-                    </div>
-                  )
-                ) : edu.logo ? (
-                  <img
-                    src={edu.logo}
-                    alt={edu.institution}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-[#0b0f24]" />
-                )}
-              </div>
-
-              {/* Text */}
-              <div className="p-6 text-center">
-                <p className="text-xs sm:text-sm text-[#16f2b3] mb-2">
-                  {edu.duration}
-                </p>
-                <h3 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-slate-200 mb-1">
-                  {edu.title}
-                </h3>
-                <p className="text-sm md:text-base text-gray-700 dark:text-gray-300">
-                  {edu.institution}
-                </p>
-              </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 w-full max-w-6xl">
+        {Educations.map((edu, i) => (
+          <div
+            key={edu.id}
+            className="flex flex-col items-center bg-[#f9f9f9] dark:bg-[#0e1525] rounded-xl shadow-lg overflow-hidden"
+            data-aos="fade-up"
+          >
+            {/* YouTube Video */}
+            <div className="w-full h-64 md:h-80 relative">
+              <iframe
+                ref={(el) => (refs.current[i] = el)}
+                className="w-full h-full"
+                src={`https://www.youtube.com/embed/${edu.videoId}?enablejsapi=1&mute=1&loop=1&playlist=${edu.videoId}&modestbranding=1&controls=0&rel=0`}
+                title={edu.title}
+                frameBorder="0"
+                allow="autoplay; encrypted-media; picture-in-picture"
+              ></iframe>
             </div>
-          );
-        })}
+
+            {/* Text */}
+            <div className="p-6 text-center">
+              <h3 className="text-xl md:text-2xl font-semibold text-[#00040f] dark:text-slate-100 mb-2">
+                {edu.title}
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                {edu.duration}
+              </p>
+              <p className="text-base text-gray-800 dark:text-gray-300">
+                {edu.institution}
+              </p>
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );
-}
+};
+
+export default Education;

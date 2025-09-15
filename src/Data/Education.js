@@ -1,6 +1,4 @@
-// Use videoId for YouTube autoplay/loop. If some entry has no video,
-// you can provide a 'logo' image instead and it will fallback.
-
+// src/Data/Education.js
 export const Educations = [
   {
     id: 1,
@@ -11,7 +9,7 @@ export const Educations = [
   },
   {
     id: 2,
-    videoId: "3uRx-ri7fvY", // TKR
+    videoId: "wnSsno0iz9A", // TKR (updated)
     title: "B.Tech in Computer Science Engineering",
     duration: "2019 – 2023",
     institution: "TKR College of Engineering & Technology, Hyderabad, India",
