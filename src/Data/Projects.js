@@ -21,7 +21,7 @@ export const projects = [
     images: [fakeNews1, fakeNews2],
     tags: ["Python", "NLP", "DistilBERT", "Bi-LSTM", "MarianMT", "scikit-learn"],
     github: "", // add repo link if public
-    webapp: "", // add demo/colab link if available
+    webapp: "https://colab.research.google.com/drive/109E8IVNRkJtC_-R-_ZpFIyDSL-W27nwo?usp=sharing", // add demo/colab link if available
   },
   {
     id: "2",
